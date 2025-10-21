@@ -11,6 +11,7 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Date"%>
 <%
+    
     // Processamento de ações
     String acao = request.getParameter("acao");
     if ("inserir".equals(acao)) {
@@ -36,10 +37,29 @@
         }
     }
 
+    // Carregar dados para exibição
     RegistroDAO registroDAO = new RegistroDAO();
     TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
     List<Registro> registros = registroDAO.listarTodos();
     List<TipoRegistro> tiposRegistro = tipoRegistroDAO.listarTodos();
+    
+    try {
+        registros = registroDAO.listarTodos();
+        tiposRegistro = tipoRegistroDAO.listarTodos();
+        
+        // Debug no console do servidor
+        System.out.println("=== DEBUG ECONEXA ===");
+        System.out.println("Tipos carregados: " + tiposRegistro.size());
+        System.out.println("Registros carregados: " + registros.size());
+        for (TipoRegistro tipo : tiposRegistro) {
+            System.out.println("Tipo: " + tipo.getId() + " - " + tipo.getNome());
+        }
+        
+    } catch (Exception e) {
+        System.out.println("ERRO AO CARREGAR DADOS: " + e.getMessage());
+        e.printStackTrace();
+    }
+
 %>
 <!DOCTYPE html>
 <html>
@@ -48,11 +68,197 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="resources/css/style-index.css" rel="stylesheet" type="text/css"/>
-    <link href="resources/css/style-mapa.css" rel="stylesheet" type="text/css"/>
+    <link href="resources/css/index.css" rel="stylesheet" type="text/css"/>
+    <style>
+        /* Reset e configurações básicas */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container do mapa */
+        #mapa-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #mapa {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Sidebar com estilo de vidro */
+        .sidebar {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            width: 350px;
+            background: linear-gradient(
+                180deg,
+                rgba(255,255,255,0.92) 0%,
+                rgba(250,250,250,0.72) 40%,
+                rgba(255,255,255,0.36) 100%
+            );
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+            backdrop-filter: blur(10px) saturate(120%);
+            padding: 20px;
+            z-index: 1000;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* Formulário */
+        .form-novo-registro {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+
+        .form-novo-registro h5 {
+            margin-bottom: 15px;
+            color: #101010;
+            font-weight: 600;
+        }
+
+        /* Lista de registros */
+        .lista-registros {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .registro-item {
+            border-bottom: 1px solid rgba(255,255,255,0.6);
+            padding: 10px 0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .registro-item:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .registro-item:last-child {
+            border-bottom: none;
+        }
+
+        .categoria-positivo {
+            border-left: 4px solid #28a745;
+            padding-left: 10px;
+        }
+
+        .categoria-negativo {
+            border-left: 4px solid #dc3545;
+            padding-left: 10px;
+        }
+
+        /* Filtros */
+        .filtros {
+            margin-bottom: 20px;
+        }
+
+        .filtros h5 {
+            margin-bottom: 10px;
+            color: #101010;
+        }
+
+        .btn-flutuante {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255,255,255,0.6);
+            color: #101010;
+            font-size: 24px;
+            box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+            backdrop-filter: blur(10px) saturate(120%);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-flutuante:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        /* Alertas */
+        .alert {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            min-width: 300px;
+            max-width: 90%;
+        }
+
+        /* Badges */
+        .badge {
+            font-size: 0.75em;
+            padding: 0.25em 0.6em;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+                right: 10px;
+                top: 70px;
+            }
+            
+            .btn-flutuante {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* Estilos para o popup do Leaflet */
+        .leaflet-popup-content {
+            margin: 12px 15px;
+            min-width: 200px;
+        }
+
+        .leaflet-popup-content h6 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .leaflet-popup-content p {
+            margin: 0 0 10px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .leaflet-popup-content small {
+            display: block;
+            margin-bottom: 4px;
+            color: #6c757d;
+        }
+    </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
+    
+    
+    
     <header class="main-header">
         <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
             <div class="container-fluid">
@@ -156,24 +362,34 @@
             
             <div class="lista-registros">
                 <h5>Registros (<%= registros.size() %>)</h5>
-                <% for(Registro registro : registros) { %>
-                    <div class="registro-item <%= registro.getTipoRegistro().getCategoria().equals("POSITIVO") ? "categoria-positivo" : "categoria-negativo" %>"
-                         onclick="mostrarNoMapa(<%= registro.getLatitude() %>, <%= registro.getLongitude() %>)">
-                        <strong><%= registro.getTitulo() %></strong>
-                        <div class="mt-1">
-                            <small class="text-muted">
-                                <%= registro.getTipoRegistro().getNome() %> • 
-                                <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %>
-                            </small>
+                <div id="lista-registros-container">
+                    <% for(Registro registro : registros) { 
+                        String badgeClass = "";
+                        if ("PENDENTE".equals(registro.getStatus())) {
+                            badgeClass = "warning";
+                        } else if ("RESOLVIDO".equals(registro.getStatus())) {
+                            badgeClass = "success";
+                        } else {
+                            badgeClass = "info";
+                        }
+                    %>
+                        <div class="registro-item <%= "POSITIVO".equals(registro.getTipoRegistro().getCategoria()) ? "categoria-positivo" : "categoria-negativo" %>"
+                             onclick="mostrarNoMapa(<%= registro.getLatitude() %>, <%= registro.getLongitude() %>, '<%= registro.getTitulo().replace("'", "\\'") %>', '<%= registro.getDescricao().replace("'", "\\'") %>')">
+                            <strong><%= registro.getTitulo() %></strong>
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <%= registro.getTipoRegistro().getNome() %> • 
+                                    <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %>
+                                </small>
+                            </div>
+                            <div class="mt-1">
+                                <span class="badge bg-<%= badgeClass %>">
+                                    <%= registro.getStatus() %>
+                                </span>
+                            </div>
                         </div>
-                        <div class="mt-1">
-                            <span class="badge bg-<%= registro.getStatus().equals("PENDENTE") ? "warning" : 
-                                               registro.getStatus().equals("RESOLVIDO") ? "success" : "info" %>">
-                                <%= registro.getStatus() %>
-                            </span>
-                        </div>
-                    </div>
-                <% } %>
+                    <% } %>
+                </div>
             </div>
         </div>
         
@@ -186,153 +402,125 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="resources/js/bootstrap.js"></script>
     <script>
-        // Variáveis globais
-        let mapa;
-        let marcadores = [];
-        let localizacaoAtual = null;
-        
-        // Inicializar mapa
-        function inicializarMapa() {
-            mapa = L.map('mapa').setView([-23.5505, -46.6333], 13);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(mapa);
-            
-            // Adicionar marcadores existentes
-            <% for(Registro registro : registros) { %>
-                adicionarMarcador(
-                    <%= registro.getLatitude() %>,
-                    <%= registro.getLongitude() %>,
-                    '<%= registro.getTitulo().replace("'", "\\'") %>',
-                    '<%= registro.getDescricao() != null ? registro.getDescricao().replace("'", "\\'") : "" %>',
-                    '<%= registro.getTipoRegistro().getCategoria() %>',
-                    '<%= registro.getTipoRegistro().getNome().replace("'", "\\'") %>',
-                    '<%= registro.getData() %>',
-                    '<%= registro.getStatus() %>'
-                );
-            <% } %>
-            
-            // Configurar evento de clique no mapa
-            mapa.on('click', function(e) {
-                localizacaoAtual = e.latlng;
-                document.getElementById('inputLatitude').value = e.latlng.lat;
-                document.getElementById('inputLongitude').value = e.latlng.lng;
-                alert('Localização selecionada: ' + e.latlng.lat.toFixed(6) + ', ' + e.latlng.lng.toFixed(6));
-            });
-        }
-        
-        // Adicionar marcador no mapa
-        function adicionarMarcador(lat, lng, titulo, descricao, categoria, tipo, data, status) {
-            var cor = categoria === 'POSITIVO' ? '#28a745' : '#dc3545';
-            var categoriaTexto = categoria === 'POSITIVO' ? '✅ Positivo' : '❌ Negativo';
-            
-            var icone = L.divIcon({
-                className: 'custom-marker',
-                html: '<div style="background-color: ' + cor + '; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"></div>',
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
-            
-            var dataFormatada = new Date(data).toLocaleDateString();
-            
-            var popupContent = '<div>' +
-                '<h6>' + titulo + '</h6>' +
-                '<p>' + (descricao || 'Sem descrição') + '</p>' +
-                '<small><strong>Tipo:</strong> ' + tipo + '</small><br>' +
-                '<small><strong>Data:</strong> ' + dataFormatada + '</small><br>' +
-                '<small><strong>Status:</strong> ' + status + '</small><br>' +
-                '<small><strong>Categoria:</strong> ' + categoriaTexto + '</small>' +
-                '</div>';
-            
-            var marcador = L.marker([lat, lng], { icon: icone })
-                .addTo(mapa)
-                .bindPopup(popupContent);
-            
-            marcadores.push(marcador);
-        }
-        
-        // Obter localização do usuário
+        // Inicialização do mapa
+        var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Variável para armazenar o marcador de localização selecionada
+        var marcadorSelecionado = null;
+        var marcadoresRegistros = [];
+
+        // Evento de clique no mapa para adicionar/atualizar marcador
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            // Atualiza os campos ocultos do formulário
+            document.getElementById('inputLatitude').value = lat;
+            document.getElementById('inputLongitude').value = lng;
+
+            // Remove o marcador anterior, se existir
+            if (marcadorSelecionado) {
+                map.removeLayer(marcadorSelecionado);
+            }
+
+            // Adiciona um novo marcador
+            marcadorSelecionado = L.marker([lat, lng]).addTo(map)
+                .bindPopup('Localização selecionada: ' + lat.toFixed(4) + ', ' + lng.toFixed(4))
+                .openPopup();
+        });
+
+        // Função para obter a localização do usuário
         function obterLocalizacao() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function(position) {
-                        localizacaoAtual = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        document.getElementById('inputLatitude').value = localizacaoAtual.lat;
-                        document.getElementById('inputLongitude').value = localizacaoAtual.lng;
-                        mapa.setView([localizacaoAtual.lat, localizacaoAtual.lng], 15);
-                        alert('Localização obtida: ' + localizacaoAtual.lat.toFixed(6) + ', ' + localizacaoAtual.lng.toFixed(6));
-                    },
-                    function(error) {
-                        alert('Erro ao obter localização: ' + error.message);
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lng = position.coords.longitude;
+
+                    // Atualiza os campos ocultos
+                    document.getElementById('inputLatitude').value = lat;
+                    document.getElementById('inputLongitude').value = lng;
+
+                    // Remove marcador anterior
+                    if (marcadorSelecionado) {
+                        map.removeLayer(marcadorSelecionado);
                     }
-                );
+
+                    // Adiciona marcador na localização atual
+                    marcadorSelecionado = L.marker([lat, lng]).addTo(map)
+                        .bindPopup('Sua localização atual: ' + lat.toFixed(4) + ', ' + lng.toFixed(4))
+                        .openPopup();
+
+                    // Centraliza o mapa na localização atual
+                    map.setView([lat, lng], 15);
+                }, function(error) {
+                    alert('Erro ao obter localização: ' + error.message);
+                });
             } else {
-                alert('Geolocalização não suportada pelo navegador');
+                alert('Geolocalização não é suportada por este navegador.');
             }
         }
-        
-        // Mostrar registro no mapa
-        function mostrarNoMapa(lat, lng) {
-            mapa.setView([lat, lng], 16);
-        }
-        
-        // Focar no formulário
+
+        // Função para focar no formulário (rolar a página até o formulário)
         function focarNoFormulario() {
-            document.querySelector('.form-novo-registro').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
+            document.querySelector('.form-novo-registro').scrollIntoView({ behavior: 'smooth' });
         }
-        
-        // Filtrar marcadores
-        function filtrarMarcadores() {
-            var categoria = document.getElementById('filtro-categoria').value;
-            var tipo = document.getElementById('filtro-tipo').value;
+
+        // Função para mostrar um registro no mapa (quando clicado na lista)
+        function mostrarNoMapa(lat, lng, titulo, descricao) {
+            map.setView([lat, lng], 15);
             
-            marcadores.forEach(function(marcador) {
-                var popupContent = marcador.getPopup().getContent();
-                var isPositivo = popupContent.includes('✅ Positivo');
-                var tipoNome = '';
-                
-                var tipoIndex = popupContent.indexOf('<strong>Tipo:</strong>');
-                if (tipoIndex !== -1) {
-                    var tipoText = popupContent.substring(tipoIndex + 20);
-                    tipoNome = tipoText.split('<')[0].trim();
-                }
-                
-                var mostrar = true;
-                
-                if (categoria !== 'TODOS') {
-                    if (categoria === 'POSITIVO' && !isPositivo) mostrar = false;
-                    if (categoria === 'NEGATIVO' && isPositivo) mostrar = false;
-                }
-                
-                if (tipo !== 'TODOS') {
-                    var tipoSelect = document.querySelector('#filtro-tipo option[value="' + tipo + '"]');
-                    if (tipoSelect && tipoNome !== tipoSelect.textContent) {
-                        mostrar = false;
-                    }
-                }
-                
-                if (mostrar) {
-                    mapa.addLayer(marcador);
-                } else {
-                    mapa.removeLayer(marcador);
+            // Remove marcadores temporários anteriores
+            marcadoresRegistros.forEach(function(marcador) {
+                if (marcador._popup && marcador._popup._content && marcador._popup._content.includes('temporário')) {
+                    map.removeLayer(marcador);
                 }
             });
-        }
-        
-        // Inicializar quando a página carregar
-        document.addEventListener('DOMContentLoaded', function() {
-            inicializarMapa();
             
-            // Configurar eventos dos filtros
-            document.getElementById('filtro-categoria').addEventListener('change', filtrarMarcadores);
-            document.getElementById('filtro-tipo').addEventListener('change', filtrarMarcadores);
-        });
+            // Adiciona marcador temporário
+            var marcadorTemporario = L.marker([lat, lng]).addTo(map)
+                .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
+                .openPopup();
+                
+            marcadoresRegistros.push(marcadorTemporario);
+        }
+
+        // Adicionar os registros existentes no mapa
+        <% for(Registro registro : registros) { %>
+            var marcador = L.marker([<%= registro.getLatitude() %>, <%= registro.getLongitude() %>])
+                .addTo(map)
+                .bindPopup(`
+                    <h6><%= registro.getTitulo() %></h6>
+                    <p><%= registro.getDescricao() %></p>
+                    <small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small>
+                    <small><strong>Status:</strong> <%= registro.getStatus() %></small>
+                    <small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>
+                `);
+                
+            marcadoresRegistros.push(marcador);
+        <% } %>
+
+        // Filtros
+        document.getElementById('filtro-categoria').addEventListener('change', aplicarFiltros);
+        document.getElementById('filtro-tipo').addEventListener('change', aplicarFiltros);
+
+        function aplicarFiltros() {
+            var filtroCategoria = document.getElementById('filtro-categoria').value;
+            var filtroTipo = document.getElementById('filtro-tipo').value;
+            
+            // Aqui você implementaria a lógica para filtrar os registros
+            // e atualizar o mapa conforme necessário
+            console.log('Filtros aplicados:', {
+                categoria: filtroCategoria,
+                tipo: filtroTipo
+            });
+        }
     </script>
+    
+
+    
 </body>
 </html>

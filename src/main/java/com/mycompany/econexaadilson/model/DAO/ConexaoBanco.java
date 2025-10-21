@@ -8,21 +8,23 @@ package com.mycompany.econexaadilson.model.DAO;
  *
  * @author gufre
  */
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConexaoBanco {
-    private static final String URL = "jdbc:mysql://localhost:5432/econexa";
-    private static final String USER = "seu_usuario";
-    private static final String PASSWORD = "sua_senha";
+    private static final String URL = "jdbc:mysql://localhost:3306/econexa";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
     
     public static Connection getConnection() throws SQLException {
         try {
-            Class.forName("org.postgresql.Driver");
+            // CORREÇÃO: Mudar para driver MySQL
+            Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Driver PostgreSQL não encontrado", e);
+            throw new SQLException("Driver MySQL não encontrado", e);
         }
     }
 }
