@@ -42,23 +42,6 @@
     TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
     List<Registro> registros = registroDAO.listarTodos();
     List<TipoRegistro> tiposRegistro = tipoRegistroDAO.listarTodos();
-    
-    try {
-        registros = registroDAO.listarTodos();
-        tiposRegistro = tipoRegistroDAO.listarTodos();
-        
-        // Debug no console do servidor
-        System.out.println("=== DEBUG ECONEXA ===");
-        System.out.println("Tipos carregados: " + tiposRegistro.size());
-        System.out.println("Registros carregados: " + registros.size());
-        for (TipoRegistro tipo : tiposRegistro) {
-            System.out.println("Tipo: " + tipo.getId() + " - " + tipo.getNome());
-        }
-        
-    } catch (Exception e) {
-        System.out.println("ERRO AO CARREGAR DADOS: " + e.getMessage());
-        e.printStackTrace();
-    }
 
 %>
 <!DOCTYPE html>
