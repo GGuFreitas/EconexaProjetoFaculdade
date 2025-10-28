@@ -198,6 +198,7 @@ body {
 
   .navbar-nav {
     gap: 6px;
+    font-size: 1.6rem;
   }
   
   .container-fluid {
@@ -247,6 +248,7 @@ body {
   .navbar-expand-md .navbar-nav {
     gap: 0.5rem;
     align-items: center;
+    font-size: 1rem;
   }
 }
 

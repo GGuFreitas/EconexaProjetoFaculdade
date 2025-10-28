@@ -56,26 +56,28 @@
 </head>
 <body>
     <header class="main-header">
-        <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="index.jsp">
-                    <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="mapa.jsp">Mapa</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+            <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+      aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Mapa</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+        </header>
 
     <!-- Alertas -->
     <% if (request.getParameter("sucesso") != null) { %>

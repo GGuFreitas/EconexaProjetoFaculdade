@@ -8,6 +8,83 @@ body {
     overflow: hidden;
 }
 
+.main-header {
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: 60px;
+}
+
+.nav-item {
+  margin: 0 2px;
+}
+
+.main-header .nav-pills .nav-link {
+  background-color: rgba(255, 255, 255, 0.674);
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+  border-radius: 2rem;
+  color: #292929; 
+  padding: 0.4rem 1rem;
+  text-align: center;
+}
+
+.main-header .nav-pills .nav-link:hover {
+  background-color: #d8d8d82f; 
+  border-radius: 2rem; 
+  color: white;
+}
+
+.main-header .nav-pills .nav-link.active {
+  background-color: #ffffff; 
+  color: #101010;            
+  border-radius: 2rem;
+  padding: 0.4rem 1rem;
+  text-align: center;
+}
+
+.main-header .nav-pills .nav-link.active:hover {
+  background-color: #ffffffc1; 
+  color: #101010;            
+  border-radius: 2rem;
+}
+
+.main-header .nav-link {
+  color: #ffffff;
+}
+
+.main-header .nav-link.active {
+  background-color: #ffffff;
+  color: #101010;
+  border-radius: 2rem;
+}
+
+.navbar-toggler {
+  border-color: rgba(255,255,255,0.2);
+  background-color: white;
+  margin-right: 8px;
+}
+
+.navbar-logo {
+  height: 44px;
+  width: auto;
+  background-color: white;
+  padding: 6px;
+  border-radius: 2rem;
+  box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+  height: 40px;
+  width: auto;
+  display: inline-block;
+}
+
+.main-header .container-fluid {
+  position: relative; 
+}
+
 /* Container do mapa */
 #mapa-container {
     position: relative;
@@ -157,6 +234,57 @@ body {
         height: 50px;
         font-size: 20px;
     }
+    
+    .navbar-nav {
+        gap: 6px;
+        font-size: 1.6rem;
+    }
+}
+
+@media (min-width: 768px) {
+  .main-header .navbar-brand {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1100;
+    background: white;   
+    border-radius: 2rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 4px;
+  }
+
+  .main-header ul {
+    margin-top: auto;
+    margin-bottom: 0 !important;
+  }
+
+  .navbar-expand-md .navbar-collapse {
+    display: flex !important;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+  }
+
+  .main-header .navbar-toggler {
+    margin-left: auto;
+  }
+  .navbar-expand-md .navbar-collapse {
+    display: flex !important;
+    justify-content: center;
+  }
+
+  .navbar-expand-md .navbar-brand {
+    margin-right: auto;
+  }
+
+  .navbar-expand-md .navbar-nav {
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 1rem;
+  }
 }
 
 /* Estilos para o popup do Leaflet */
