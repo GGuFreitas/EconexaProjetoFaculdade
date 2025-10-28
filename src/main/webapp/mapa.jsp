@@ -97,7 +97,9 @@
         <div id="mapa"></div>
         
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar-main">
+            <!-- FILTROS REMOVIDOS POR ENQUANTO
+            
             <div class="filtros">
                 <h5>Filtros</h5>
                 <select id="filtro-categoria" class="form-select mb-2">
@@ -111,7 +113,9 @@
                         <option value="<%= tipo.getId() %>"><%= tipo.getNome() %></option>
                     <% } %>
                 </select>
-            </div>
+            </div> 
+            
+            -->
             
             <div class="form-novo-registro">
                 <h5>Novo Registro</h5>
@@ -192,7 +196,7 @@
         
         <!-- Botão Flutuante -->
         <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
-            +
+            Novo Registro
         </button>
     </div>
 
@@ -263,7 +267,19 @@
 
         // Função para focar no formulário (rolar a página até o formulário)
         function focarNoFormulario() {
-            document.querySelector('.form-novo-registro').scrollIntoView({ behavior: 'smooth' });
+            const sidebar = document.getElementById("sidebar-main");
+            const button = document.getElementById("btnNovoRegistro");
+            
+            
+            if (button.textContent === 'Fechar') {
+                button.textContent = 'Novo Registro';
+            } else {
+                button.textContent = 'Fechar';
+            }
+            
+            sidebar.classList.toggle('is-visible');
+            
+            
         }
 
         // Função para mostrar um registro no mapa (quando clicado na lista)
@@ -300,10 +316,14 @@
             marcadoresRegistros.push(marcador);
         <% } %>
 
+
+        /*
+         * 
         // Filtros
         document.getElementById('filtro-categoria').addEventListener('change', aplicarFiltros);
         document.getElementById('filtro-tipo').addEventListener('change', aplicarFiltros);
 
+        
         function aplicarFiltros() {
             var filtroCategoria = document.getElementById('filtro-categoria').value;
             var filtroTipo = document.getElementById('filtro-tipo').value;
@@ -315,6 +335,10 @@
                 tipo: filtroTipo
             });
         }
+        
+        */
+        
+        
     </script>
     
 
