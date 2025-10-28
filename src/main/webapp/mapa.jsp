@@ -197,7 +197,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="resources/js/bootstrap.js"></script>
+    <script src="resources/js/leaflet.js" type="text/javascript"></script>
     <script>
         // Inicialização do mapa
         var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
