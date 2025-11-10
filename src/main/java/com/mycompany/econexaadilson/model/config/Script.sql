@@ -68,10 +68,10 @@ INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
 
 -- Inserir alguns registros de exemplo para testar o mapa
 INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
-('Buraco na Avenida Principal', 'Grande buraco na pista da Avenida Central, próximo ao número 123', CURRENT_TIMESTAMP, -15.792, -47.882, 'PENDENTE', 1),
-('Poste de luz queimado', 'Poste não funciona há 3 dias na Rua das Flores', CURRENT_TIMESTAMP, -15.786, -47.875, 'EM_ANDAMENTO', 2),
-('Lixo acumulado', 'Acúmulo de lixo na praça do bairro', CURRENT_TIMESTAMP, -15.788, -47.879, 'RESOLVIDO', 3),
-('Parque bem conservado', 'Parque da cidade está impecável', CURRENT_TIMESTAMP, -15.790, -47.885, 'PENDENTE', 11),
-('Nova pavimentação', 'Rua recém-asfaltada no centro', CURRENT_TIMESTAMP, -15.785, -47.878, 'RESOLVIDO', 15),
-('Árvore caída', 'Árvore caída bloqueando a rua', CURRENT_TIMESTAMP, -15.795, -47.880, 'PENDENTE', 5),
-('Feira comunitária', 'Feira de produtos locais no bairro', CURRENT_TIMESTAMP, -15.782, -47.876, 'PENDENTE', 20);
+('Buraco na Avenida Principal', 'Grande buraco na pista da Avenida Central, próximo ao número 123', CURRENT_TIMESTAMP, -15.792, -47.882, 'PENDENTE', 21),
+('Poste de luz queimado', 'Poste não funciona há 3 dias na Rua das Flores', CURRENT_TIMESTAMP, -15.786, -47.875, 'EM_ANDAMENTO', 22),
+('Lixo acumulado', 'Acúmulo de lixo na praça do bairro', CURRENT_TIMESTAMP, -15.788, -47.879, 'RESOLVIDO', 23),
+('Parque bem conservado', 'Parque da cidade está impecável', CURRENT_TIMESTAMP, -15.790, -47.885, 'PENDENTE', 31),
+('Nova pavimentação', 'Rua recém-asfaltada no centro', CURRENT_TIMESTAMP, -15.785, -47.878, 'RESOLVIDO', 35),
+('Árvore caída', 'Árvore caída bloqueando a rua', CURRENT_TIMESTAMP, -15.795, -47.880, 'PENDENTE', 25),
+('Feira comunitária', 'Feira de produtos locais no bairro', CURRENT_TIMESTAMP, -15.782, -47.876, 'PENDENTE', 40);

@@ -8,6 +8,7 @@ package com.mycompany.econexaadilson.model.DAO;
  *
  * @author gufre
  */
+import com.mycompany.econexaadilson.model.config.ConexaoBanco;
 import com.mycompany.econexaadilson.model.TipoRegistro;
 import java.sql.*;
 import java.util.ArrayList;
