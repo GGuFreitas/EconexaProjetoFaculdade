@@ -332,26 +332,80 @@ body {
   }
 }
 
-/* Estilos para o popup do Leaflet */
+/* Estilos para os pop-ups do mapa */
 .leaflet-popup-content {
-    margin: 12px 15px;
-    min-width: 200px;
+    margin: 12px;
+    min-width: 250px;
+    max-width: 300px;
 }
 
-.leaflet-popup-content h6 {
+.popup-content h6 {
     margin: 0 0 8px 0;
     color: #2c3e50;
-    font-weight: 600;
+    font-weight: bold;
+    font-size: 16px;
 }
 
-.leaflet-popup-content p {
+.popup-content p {
     margin: 0 0 10px 0;
-    color: #6c757d;
-    font-size: 14px;
+    color: #34495e;
+    line-height: 1.4;
 }
 
-.leaflet-popup-content small {
+.popup-details {
+    border-top: 1px solid #ecf0f1;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+.popup-details small {
     display: block;
-    margin-bottom: 4px;
-    color: #6c757d;
+    margin-bottom: 3px;
+    color: #7f8c8d;
+    font-size: 12px;
+}
+
+/* Estilos para os marcadores */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.temp-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.selection-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.location-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Efeito hover nos marcadores */
+.custom-marker:hover div,
+.temp-marker:hover div,
+.selection-marker:hover div,
+.location-marker:hover div {
+    transform: scale(1.15);
+    transition: transform 0.2s ease;
+    z-index: 1000;
+}
+
+/* Estilos para o campo de arquivo */
+.form-control[type="file"] {
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.form-control[type="file"]:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }

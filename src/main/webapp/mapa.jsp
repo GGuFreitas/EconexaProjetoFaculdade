@@ -119,7 +119,7 @@
             
             <div class="form-novo-registro">
                 <h5>Novo Registro</h5>
-                <form method="POST" action="mapa.jsp" id="formRegistro">
+                <form method="POST" action="mapa.jsp" id="formRegistro"  enctype="multipart/form-data">
                     <input type="hidden" name="acao" value="inserir">
                     <input type="hidden" name="latitude" id="inputLatitude">
                     <input type="hidden" name="longitude" id="inputLongitude">
@@ -144,6 +144,12 @@
                         </select>
                     </div>
                     
+                    <div class="mb-2">
+                            <label class="form-label">Foto (Opcional)</label>
+                            <input type="file" class="form-control" name="foto" id="inputFoto" accept="image/*" capture="environment">
+                            <small class="text-muted">Você pode tirar uma foto ou escolher da galeria</small>
+                    </div>
+                        
                     <div class="mb-2">
                         <small class="text-muted">
                             Clique no mapa para selecionar a localização
@@ -204,141 +210,209 @@
     <script src="resources/js/bootstrap.js"></script>
     <script>
         // Inicialização do mapa
-        var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
+            var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-        // Variável para armazenar o marcador de localização selecionada
-        var marcadorSelecionado = null;
-        var marcadoresRegistros = [];
+            // Variáveis globais
+            var marcadorSelecionado = null;
+            var marcadoresRegistros = [];
+            var marcadoresPorCoordenadas = {};
 
-        // Evento de clique no mapa para adicionar/atualizar marcador
-        map.on('click', function(e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
+            // DEBUG - Verificar dados dos registros
+            console.log('=== DEBUG REGISTROS ===');
+            <% for(Registro registro : registros) { %>
+                console.log({
+                    titulo: '<%= registro.getTitulo() %>',
+                    categoria: '<%= registro.getTipoRegistro().getCategoria() %>',
+                    status: '<%= registro.getStatus() %>',
+                    cor: '<%= "POSITIVO".equals(registro.getTipoRegistro().getCategoria()) ? "VERDE" : "VERMELHO" %>'
+                });
+            <% } %>
 
-            // Atualiza os campos ocultos do formulário
-            document.getElementById('inputLatitude').value = lat;
-            document.getElementById('inputLongitude').value = lng;
+            // Configurar ícones personalizados 
+            function criarIconeDetalhado(categoria, status) {
+                console.log('Criando ícone:', 'Categoria:', categoria, 'Status:', status);
 
-            // Remove o marcador anterior, se existir
-            if (marcadorSelecionado) {
-                map.removeLayer(marcadorSelecionado);
+                var cor, simbolo;
+
+                // Forçar cores baseadas apenas na categoria (ignorar status por enquanto)
+                if (categoria === 'POSITIVO') {
+                    cor = '#27ae60'; // VERDE
+                    simbolo = '✓';
+                } else if (categoria === 'NEGATIVO') {
+                    cor = '#e74c3c'; // VERMELHO  
+                    simbolo = '⚠';
+                } else {
+                    cor = '#3498db'; // AZUL (fallback)
+                    simbolo = '●';
+                }
+
+                return L.divIcon({
+                    className: 'custom-marker',
+                    html: `
+                        <div style="
+                            background-color: ${cor}; 
+                            width: 32px; 
+                            height: 32px; 
+                            border-radius: 50%; 
+                            border: 3px solid white; 
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 16px;
+                            cursor: pointer;
+                        ">${simbolo}</div>
+                    `,
+                    iconSize: [38, 38],
+                    iconAnchor: [19, 19]
+                });
             }
 
-            // Adiciona um novo marcador
-            marcadorSelecionado = L.marker([lat, lng]).addTo(map)
+            // Adicionar os registros existentes no mapa
+            <% for(Registro registro : registros) { %>
+                var lat = <%= registro.getLatitude() %>;
+                var lng = <%= registro.getLongitude() %>;
+                var coordenadaKey = lat.toFixed(6) + ',' + lng.toFixed(6);
+
+                var icone = criarIconeDetalhado(
+                    '<%= registro.getTipoRegistro().getCategoria() %>', 
+                    '<%= registro.getStatus() %>'
+                );
+
+                var marcador = L.marker([lat, lng], {icon: icone})
+                    .addTo(map)
+                    .bindPopup(
+                        '<div class="popup-content">' +
+                        '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
+                        '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
+                        '<div class="popup-details">' +
+                        '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
+                        '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
+                        '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
+                        '</div>' +
+                        '</div>'
+                    );
+
+                marcadoresRegistros.push(marcador);
+                // Guarda referência por coordenadas
+                marcadoresPorCoordenadas[coordenadaKey] = marcador;
+            <% } %>
+
+            // Evento de clique no mapa para adicionar/atualizar marcador
+            map.on('click', function(e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+
+                // Atualiza os campos ocultos do formulário
+                document.getElementById('inputLatitude').value = lat;
+                document.getElementById('inputLongitude').value = lng;
+
+                // Remove o marcador anterior, se existir
+                if (marcadorSelecionado) {
+                    map.removeLayer(marcadorSelecionado);
+                }
+
+                // Adiciona um novo marcador com ícone personalizado
+                marcadorSelecionado = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'selection-marker',
+                        html: '<div style="background-color: #f39c12; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
+                    })
+                }).addTo(map)
                 .bindPopup('Localização selecionada: ' + lat.toFixed(4) + ', ' + lng.toFixed(4))
                 .openPopup();
-        });
+            });
 
-        // Função para obter a localização do usuário
-        function obterLocalizacao() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    var lat = position.coords.latitude;
-                    var lng = position.coords.longitude;
+            // Função para obter a localização do usuário
+            function obterLocalizacao() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
 
-                    // Atualiza os campos ocultos
-                    document.getElementById('inputLatitude').value = lat;
-                    document.getElementById('inputLongitude').value = lng;
+                        // Atualiza os campos ocultos
+                        document.getElementById('inputLatitude').value = lat;
+                        document.getElementById('inputLongitude').value = lng;
 
-                    // Remove marcador anterior
-                    if (marcadorSelecionado) {
-                        map.removeLayer(marcadorSelecionado);
-                    }
+                        // Remove marcador anterior
+                        if (marcadorSelecionado) {
+                            map.removeLayer(marcadorSelecionado);
+                        }
 
-                    // Adiciona marcador na localização atual
-                    marcadorSelecionado = L.marker([lat, lng]).addTo(map)
+                        // Adiciona marcador na localização atual com ícone personalizado
+                        marcadorSelecionado = L.marker([lat, lng], {
+                            icon: L.divIcon({
+                                className: 'location-marker',
+                                html: '<div style="background-color: #3498db; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+                                iconSize: [26, 26],
+                                iconAnchor: [13, 13]
+                            })
+                        }).addTo(map)
                         .bindPopup('Sua localização atual: ' + lat.toFixed(4) + ', ' + lng.toFixed(4))
                         .openPopup();
 
-                    // Centraliza o mapa na localização atual
-                    map.setView([lat, lng], 15);
-                }, function(error) {
-                    alert('Erro ao obter localização: ' + error.message);
-                });
-            } else {
-                alert('Geolocalização não é suportada por este navegador.');
-            }
-        }
-
-        // Função para focar no formulário (rolar a página até o formulário)
-        function focarNoFormulario() {
-            const sidebar = document.getElementById("sidebar-main");
-            const button = document.getElementById("btnNovoRegistro");
-            
-            
-            if (button.textContent === 'Fechar') {
-                button.textContent = 'Novo Registro';
-            } else {
-                button.textContent = 'Fechar';
-            }
-            
-            sidebar.classList.toggle('is-visible');
-            
-            
-        }
-
-        // Função para mostrar um registro no mapa (quando clicado na lista)
-        function mostrarNoMapa(lat, lng, titulo, descricao) {
-            map.setView([lat, lng], 15);
-            
-            // Remove marcadores temporários anteriores
-            marcadoresRegistros.forEach(function(marcador) {
-                if (marcador._popup && marcador._popup._content && marcador._popup._content.includes('temporário')) {
-                    map.removeLayer(marcador);
+                        // Centraliza o mapa na localização atual
+                        map.setView([lat, lng], 15);
+                    }, function(error) {
+                        alert('Erro ao obter localização: ' + error.message);
+                    });
+                } else {
+                    alert('Geolocalização não é suportada por este navegador.');
                 }
-            });
-            
-            // Adiciona marcador temporário
-            var marcadorTemporario = L.marker([lat, lng]).addTo(map)
-                .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
-                .openPopup();
-                
-            marcadoresRegistros.push(marcadorTemporario);
-        }
+            }
 
-        // Adicionar os registros existentes no mapa
-        <% for(Registro registro : registros) { %>
-            var marcador = L.marker([<%= registro.getLatitude() %>, <%= registro.getLongitude() %>])
-                .addTo(map)
-                .bindPopup(`
-                    <h6><%= registro.getTitulo() %></h6>
-                    <p><%= registro.getDescricao() %></p>
-                    <small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small>
-                    <small><strong>Status:</strong> <%= registro.getStatus() %></small>
-                    <small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>
-                `);
-                
-            marcadoresRegistros.push(marcador);
-        <% } %>
+            // Função para focar no formulário
+            function focarNoFormulario() {
+                const sidebar = document.getElementById("sidebar-main");
+                const button = document.getElementById("btnNovoRegistro");
 
+                if (button.textContent === 'Fechar') {
+                    button.textContent = 'Novo Registro';
+                } else {
+                    button.textContent = 'Fechar';
+                }
 
-        /*
-         * 
-        // Filtros
-        document.getElementById('filtro-categoria').addEventListener('change', aplicarFiltros);
-        document.getElementById('filtro-tipo').addEventListener('change', aplicarFiltros);
+                sidebar.classList.toggle('is-visible');
+            }
 
-        
-        function aplicarFiltros() {
-            var filtroCategoria = document.getElementById('filtro-categoria').value;
-            var filtroTipo = document.getElementById('filtro-tipo').value;
-            
-            // Aqui você implementaria a lógica para filtrar os registros
-            // e atualizar o mapa conforme necessário
-            console.log('Filtros aplicados:', {
-                categoria: filtroCategoria,
-                tipo: filtroTipo
-            });
-        }
-        
-        */
-        
-        
+            // Função MELHORADA para mostrar registro no mapa
+            function mostrarNoMapa(lat, lng, titulo, descricao) {
+                map.setView([lat, lng], 15);
+
+                var coordenadaKey = lat.toFixed(6) + ',' + lng.toFixed(6);
+                var marcadorExistente = marcadoresPorCoordenadas[coordenadaKey];
+
+                if (marcadorExistente) {
+                    // Fecha outros popups
+                    map.closePopup();
+                    // Abre o popup do marcador existente
+                    marcadorExistente.openPopup();
+                } else {
+                    console.warn('Marcador não encontrado para coordenadas:', lat, lng);
+                    // Opcional: criar marcador temporário
+                    var marcadorTemporario = L.marker([lat, lng], {
+                        icon: L.divIcon({
+                            className: 'temp-marker',
+                            html: '<div style="background-color: #f39c12; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+                            iconSize: [30, 30],
+                            iconAnchor: [15, 15]
+                        })
+                    }).addTo(map)
+                    .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
+                    .openPopup();
+
+                    marcadoresRegistros.push(marcadorTemporario);
+                    marcadoresPorCoordenadas[coordenadaKey] = marcadorTemporario;
+                }
+            }
     </script>
     
 
