@@ -10,15 +10,14 @@ package com.mycompany.econexaadilson.model.DAO;
  * @author gufre
  */
 import com.mycompany.econexaadilson.model.config.ConexaoBanco;
-import com.mycompany.econexaadilson.model.Registro;
-import com.mycompany.econexaadilson.model.TipoRegistro;
+import com.mycompany.econexaadilson.model.Blog;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RegistroDAO {
+public class BlogDAO {
     
-    public boolean inserir(Registro registro) {
+    public boolean inserir(Blog registro) {
         String sql = "INSERT INTO registro (titulo, descricao, data, latitude, longitude, foto, status, tipo_registro_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
@@ -32,7 +31,6 @@ public class RegistroDAO {
             stmt.setDouble(5, registro.getLongitude());
             stmt.setString(6, registro.getFoto());
             stmt.setString(7, registro.getStatus());
-            stmt.setLong(8, registro.getTipoRegistro().getId());
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -41,8 +39,8 @@ public class RegistroDAO {
         }
     }
     
-    public List<Registro> listarTodos() {
-        List<Registro> registros = new ArrayList<>();
+    public List<Blog> listarTodos() {
+        List<Blog> registros = new ArrayList<>();
         String sql = "SELECT r.*, tr.nome as tipo_nome, tr.categoria as tipo_categoria, " +
                     "tr.descricao as tipo_descricao, tr.icone as tipo_icone " +
                     "FROM registro r " +
@@ -54,7 +52,7 @@ public class RegistroDAO {
              ResultSet rs = stmt.executeQuery()) {
             
             while (rs.next()) {
-                Registro registro = new Registro();
+                Blog registro = new Blog();
                 registro.setId(rs.getLong("id"));
                 registro.setTitulo(rs.getString("titulo"));
                 registro.setDescricao(rs.getString("descricao"));
@@ -64,14 +62,6 @@ public class RegistroDAO {
                 registro.setFoto(rs.getString("foto"));
                 registro.setStatus(rs.getString("status"));
                 
-                TipoRegistro tipo = new TipoRegistro();
-                tipo.setId(rs.getLong("tipo_registro_id"));
-                tipo.setNome(rs.getString("tipo_nome"));
-                tipo.setCategoria(rs.getString("tipo_categoria"));
-                tipo.setDescricao(rs.getString("tipo_descricao"));
-                tipo.setIcone(rs.getString("tipo_icone"));
-                
-                registro.setTipoRegistro(tipo);
                 registros.add(registro);
             }
         } catch (SQLException e) {
@@ -80,7 +70,7 @@ public class RegistroDAO {
         return registros;
     }
     
-    public Registro buscarPorId(Long id) {
+    public Blog buscarPorId(Long id) {
         String sql = "SELECT r.*, tr.nome as tipo_nome, tr.categoria as tipo_categoria, " +
                     "tr.descricao as tipo_descricao, tr.icone as tipo_icone " +
                     "FROM registro r " +
@@ -94,7 +84,7 @@ public class RegistroDAO {
             ResultSet rs = stmt.executeQuery();
             
             if (rs.next()) {
-                Registro registro = new Registro();
+                Blog registro = new Blog();
                 registro.setId(rs.getLong("id"));
                 registro.setTitulo(rs.getString("titulo"));
                 registro.setDescricao(rs.getString("descricao"));
@@ -104,14 +94,6 @@ public class RegistroDAO {
                 registro.setFoto(rs.getString("foto"));
                 registro.setStatus(rs.getString("status"));
                 
-                TipoRegistro tipo = new TipoRegistro();
-                tipo.setId(rs.getLong("tipo_registro_id"));
-                tipo.setNome(rs.getString("tipo_nome"));
-                tipo.setCategoria(rs.getString("tipo_categoria"));
-                tipo.setDescricao(rs.getString("tipo_descricao"));
-                tipo.setIcone(rs.getString("tipo_icone"));
-                
-                registro.setTipoRegistro(tipo);
                 return registro;
             }
         } catch (SQLException e) {
@@ -120,7 +102,7 @@ public class RegistroDAO {
         return null;
     }
     
-    public boolean atualizar(Registro registro) {
+    public boolean atualizar(Blog registro) {
         String sql = "UPDATE registro SET titulo = ?, descricao = ?, data = ?, " +
                     "latitude = ?, longitude = ?, foto = ?, status = ?, tipo_registro_id = ? " +
                     "WHERE id = ?";
@@ -135,7 +117,6 @@ public class RegistroDAO {
             stmt.setDouble(5, registro.getLongitude());
             stmt.setString(6, registro.getFoto());
             stmt.setString(7, registro.getStatus());
-            stmt.setLong(8, registro.getTipoRegistro().getId());
             stmt.setLong(9, registro.getId());
             
             return stmt.executeUpdate() > 0;

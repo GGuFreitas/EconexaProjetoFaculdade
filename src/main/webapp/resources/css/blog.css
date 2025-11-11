@@ -2,17 +2,21 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: white;
-    height: 100vh;
-    overflow: hidden;
+    background-color: black;
+    padding-top: 80px;
 }
 
-.leaflet-left .leaflet-control {
-    margin-left: 10px;
+/* Lista de registros */
+.lista-registros {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px; 
+    padding-bottom: 20px; 
 }
-.leaflet-top .leaflet-control {
-    margin-top: 4rem;
-}
+
 .main-header {
   background-color: transparent;
   position: fixed;
@@ -90,17 +94,6 @@ body {
   position: relative; 
 }
 
-/* Container do mapa */
-#mapa-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-}
-
-#mapa {
-    width: 100%;
-    height: 100%;
-}
 
 /* Sidebar com estilo de vidro */
 .sidebar {
@@ -139,47 +132,64 @@ body {
     font-weight: 600;
 }
 
-/* Lista de registros */
-.lista-registros {
-    max-height: 300px;
-    overflow-y: auto;
+.perfil {
+    align-items: center;
+    background-color: white;
+    width: 100%;
+    margin: 12px 0; 
+    border-radius: 24px;
+    max-width: 900px;
+    overflow: hidden; 
 }
 
 .registro-item {
-    border-bottom: 1px solid rgba(255,255,255,0.6);
-    padding: 10px 0;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    align-items: center;
+    background-color: white;
+    width: 100%;
+    margin: 12px 0; 
+    border-radius: 24px;
+    max-width: 900px;
+    overflow: hidden; 
 }
 
-.registro-item:hover {
-    background: rgba(255, 255, 255, 0.4);
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  min-height: 450px;
 }
 
-.registro-item:last-child {
-    border-bottom: none;
+.grid div {
+  text-align: center;
+  padding: 0 4px;
 }
 
-.categoria-positivo {
-    border-left: 4px solid #28a745;
-    padding-left: 10px;
+.grid .conteudo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  padding: 20px;
 }
 
-.categoria-negativo {
-    border-left: 4px solid #dc3545;
-    padding-left: 10px;
+.grid .conteudo strong {
+    font-size: 2rem;
+    text-align: right;
 }
 
-/* Filtros */
-.filtros {
-    margin-bottom: 20px;
+.grid .conteudo .texto-registro, .grid .conteudo .data-registro p {
+    font-size: 1rem;
+    text-align: right;
 }
 
-.filtros h5 {
-    margin-bottom: 10px;
-    color: #101010;
+.grid img {
+    width: 90%;
+    height: 95%; 
+    object-fit: cover; 
+    border-radius: 24px;
+    justify-self: center;
+    align-self: center;
 }
-
 
 .btn-flutuante {
     position: fixed;
@@ -217,7 +227,6 @@ body {
     max-width: 90%;
 }
 
-/* Badges */
 .badge {
     font-size: 0.75em;
     padding: 0.25em 0.6em;
@@ -249,6 +258,9 @@ body {
 
 
 @media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
     #sidebar-main {
         transform: translateX(100%); 
         visibility: hidden;
@@ -330,28 +342,4 @@ body {
     align-items: center;
     font-size: 1rem;
   }
-}
-
-/* Estilos para o popup do Leaflet */
-.leaflet-popup-content {
-    margin: 12px 15px;
-    min-width: 200px;
-}
-
-.leaflet-popup-content h6 {
-    margin: 0 0 8px 0;
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.leaflet-popup-content p {
-    margin: 0 0 10px 0;
-    color: #6c757d;
-    font-size: 14px;
-}
-
-.leaflet-popup-content small {
-    display: block;
-    margin-bottom: 4px;
-    color: #6c757d;
 }
