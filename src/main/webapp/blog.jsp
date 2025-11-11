@@ -1,7 +1,7 @@
 <%-- 
-    Document   : mapa
-    Created on : 20 de out. de 2025, 19:40:41
-    Author     : gufre
+    Document   : Blog
+    Created on : 10 de nov. de 2025, 19:40:41
+    Author     : Jhonny
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
