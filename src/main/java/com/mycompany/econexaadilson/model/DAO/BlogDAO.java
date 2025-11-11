@@ -1,138 +1,81 @@
 package com.mycompany.econexaadilson.model.DAO;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-/**
- *
- * @author gufre
- */
-import com.mycompany.econexaadilson.model.config.ConexaoBanco;
 import com.mycompany.econexaadilson.model.Blog;
-import java.sql.*;
+import com.mycompany.econexaadilson.model.config.ConexaoBanco; // Presumo que você tenha esta classe
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlogDAO {
-    
-    public boolean inserir(Blog registro) {
-        String sql = "INSERT INTO registro (titulo, descricao, data, latitude, longitude, foto, status, tipo_registro_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, registro.getTitulo());
-            stmt.setString(2, registro.getDescricao());
-            stmt.setTimestamp(3, new Timestamp(registro.getData().getTime()));
-            stmt.setDouble(4, registro.getLatitude());
-            stmt.setDouble(5, registro.getLongitude());
-            stmt.setString(6, registro.getFoto());
-            stmt.setString(7, registro.getStatus());
-            
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public List<Blog> listarTodos() {
-        List<Blog> registros = new ArrayList<>();
-        String sql = "SELECT r.*, tr.nome as tipo_nome, tr.categoria as tipo_categoria, " +
-                    "tr.descricao as tipo_descricao, tr.icone as tipo_icone " +
-                    "FROM registro r " +
-                    "INNER JOIN tipo_registro tr ON r.tipo_registro_id = tr.id " +
-                    "ORDER BY r.data DESC";
-        
+
+    /**
+     * Lista todos os posts que estão marcados como 'PUBLICADO'.
+     * Também busca o nome do autor.
+     */
+    public List<Blog> listarTodosPublicados() {
+        List<Blog> posts = new ArrayList<>();
+        // Query faz JOIN com usuarios para pegar o nome
+        String sql = "SELECT bp.*, u.nome as nome_autor " +
+                     "FROM blog_post bp " +
+                     "JOIN usuarios u ON bp.usuario_id = u.id " +
+                     "WHERE bp.status_publicacao = 'PUBLICADO' " +
+                     "ORDER BY bp.data_publicacao DESC";
+
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-            
+
             while (rs.next()) {
-                Blog registro = new Blog();
-                registro.setId(rs.getLong("id"));
-                registro.setTitulo(rs.getString("titulo"));
-                registro.setDescricao(rs.getString("descricao"));
-                registro.setData(rs.getTimestamp("data"));
-                registro.setLatitude(rs.getDouble("latitude"));
-                registro.setLongitude(rs.getDouble("longitude"));
-                registro.setFoto(rs.getString("foto"));
-                registro.setStatus(rs.getString("status"));
+                Blog post = new Blog();
+                post.setId(rs.getLong("id"));
+                post.setTitulo(rs.getString("titulo"));
+                post.setDescricao(rs.getString("descricao"));
+                post.setFotoCapa(rs.getString("foto_capa"));
+                post.setStatusPublicacao(rs.getString("status_publicacao"));
+                post.setDataPublicacao(rs.getTimestamp("data_publicacao"));
+                post.setUsuarioId(rs.getLong("usuario_id"));
+                post.setRegistroId(rs.getLong("registro_id"));
                 
-                registros.add(registro);
+                // Campo do JOIN
+                post.setNomeAutor(rs.getString("nome_autor")); 
+                
+                posts.add(post);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            // Em um app real, logar o erro
         }
-        return registros;
+        return posts;
     }
-    
-    public Blog buscarPorId(Long id) {
-        String sql = "SELECT r.*, tr.nome as tipo_nome, tr.categoria as tipo_categoria, " +
-                    "tr.descricao as tipo_descricao, tr.icone as tipo_icone " +
-                    "FROM registro r " +
-                    "INNER JOIN tipo_registro tr ON r.tipo_registro_id = tr.id " +
-                    "WHERE r.id = ?";
-        
+
+    /**
+     * Insere um novo post no blog.
+     */
+    public boolean inserir(Blog post) {
+        String sql = "INSERT INTO blog_post (titulo, descricao, foto_capa, status_publicacao, usuario_id, registro_id, data_publicacao) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         try (Connection conn = ConexaoBanco.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setLong(1, id);
-            ResultSet rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                Blog registro = new Blog();
-                registro.setId(rs.getLong("id"));
-                registro.setTitulo(rs.getString("titulo"));
-                registro.setDescricao(rs.getString("descricao"));
-                registro.setData(rs.getTimestamp("data"));
-                registro.setLatitude(rs.getDouble("latitude"));
-                registro.setLongitude(rs.getDouble("longitude"));
-                registro.setFoto(rs.getString("foto"));
-                registro.setStatus(rs.getString("status"));
-                
-                return registro;
+
+            stmt.setString(1, post.getTitulo());
+            stmt.setString(2, post.getDescricao());
+            stmt.setString(3, post.getFotoCapa());
+            stmt.setString(4, post.getStatusPublicacao());
+            stmt.setLong(5, post.getUsuarioId());
+            if (post.getRegistroId() != null) {
+                stmt.setLong(6, post.getRegistroId());
+            } else {
+                stmt.setNull(6, java.sql.Types.BIGINT);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    public boolean atualizar(Blog registro) {
-        String sql = "UPDATE registro SET titulo = ?, descricao = ?, data = ?, " +
-                    "latitude = ?, longitude = ?, foto = ?, status = ?, tipo_registro_id = ? " +
-                    "WHERE id = ?";
-        
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, registro.getTitulo());
-            stmt.setString(2, registro.getDescricao());
-            stmt.setTimestamp(3, new Timestamp(registro.getData().getTime()));
-            stmt.setDouble(4, registro.getLatitude());
-            stmt.setDouble(5, registro.getLongitude());
-            stmt.setString(6, registro.getFoto());
-            stmt.setString(7, registro.getStatus());
-            stmt.setLong(9, registro.getId());
-            
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-    
-    public boolean excluir(Long id) {
-        String sql = "DELETE FROM registro WHERE id = ?";
-        
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setLong(1, id);
+
+            stmt.setTimestamp(7, new Timestamp(post.getDataPublicacao().getTime()));
+
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

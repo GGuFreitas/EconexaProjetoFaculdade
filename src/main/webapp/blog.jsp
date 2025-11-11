@@ -1,157 +1,156 @@
 <%-- 
     Document   : Blog
-    Created on : 10 de nov. de 2025, 19:40:41
-    Author     : Jhonny
+    Adaptado para a tabela blog_post
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%-- NOVOS IMPORTS --%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.Blog"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Date"%>
 
 <%
-    
     // Processamento de ações
     String acao = request.getParameter("acao");
     if ("inserir".equals(acao)) {
         try {
-            Blog registro = new Blog();
-            registro.setTitulo(request.getParameter("titulo"));
-            registro.setDescricao(request.getParameter("descricao"));
-            registro.setData(new Date());
-            registro.setLatitude(Double.parseDouble(request.getParameter("latitude")));
-            registro.setLongitude(Double.parseDouble(request.getParameter("longitude")));
-            registro.setStatus("PENDENTE");
+            // Cria um BLOG POST, não um registro de mapa
+            Blog post = new Blog();
+            post.setTitulo(request.getParameter("titulo"));
+            post.setDescricao(request.getParameter("descricao"));
+            post.setFotoCapa(request.getParameter("foto_capa")); // Novo campo
             
-            new BlogDAO().inserir(registro);
-            response.sendRedirect("mapa.jsp?sucesso=Registro criado com sucesso!");
+            // --- ATENÇÃO ---
+            // O ID do usuário deve vir da SESSÃO após o login
+            // Estamos fixando '1' (Admin) apenas como exemplo
+            post.setUsuarioId(1L); 
+            // --- FIM ATENÇÃO ---
+
+            post.setStatusPublicacao("PUBLICADO"); // Define o status do post
+            post.setDataPublicacao(new Date()); // Define a data
+            
+            // Opcional: Se o seu formulário enviasse um 'registro_id', 
+            // você o definiria aqui. Por enquanto, será nulo.
+            // post.setRegistroId(Long.parseLong(request.getParameter("registro_id")));
+
+            new BlogDAO().inserir(post);
+            
+            // Redireciona para a própria página de blog
+            response.sendRedirect("blog.jsp?sucesso=Post criado com sucesso!");
             return;
         } catch (Exception e) {
-            response.sendRedirect("mapa.jsp?erro=Erro ao criar registro: " + e.getMessage());
+            response.sendRedirect("blog.jsp?erro=Erro ao criar post: " + e.getMessage());
             return;
         }
     }
 
-    // Carregar dados para exibição
-    BlogDAO registroDAO = new BlogDAO();
-    List<Blog> registros = registroDAO.listarTodos();
-
+    // Carregar dados para exibição (agora da tabela blog_post)
+    BlogDAO postDAO = new BlogDAO();
+    List<Blog> posts = postDAO.listarTodosPublicados();
 %>
 
 <html>
     <head>
         <title>Blog</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"><head>
-        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="resources/css/blog.css" rel="stylesheet" type="text/css"/>
-        </head>
     </head>
     <body>
         
         <header class="main-header">
             <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
-    </a>
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
+                    </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-      aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-    <div class="collapse navbar-collapse" id="mainNavbar">
-      <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
-        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
-      </ul>
-    </div>
-  </div>
-                
-</nav>
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
+                            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
         </header>
         
         <div class="lista-registros">
+
+            <div class="perfil">
+                <div class="perfil-avatar">
+                    <img src="https://placehold.co/50x50/333/FFF?text=A" alt="Avatar Admin"/>
+                </div>
+                <div class="perfil-info">
+                    <strong>Admin</strong>
+                    <small>@admin_econexa</small>
+                </div>
+                <div class="perfil-acoes">
+                    <button class="btn-seguir">Seguir</button>
+                </div>
+            </div>
             
-    <div class="perfil">
-        
-        <p>PERFIL VAI AQUI</p>
-    
-    </div>
-    
-        <% 
-            for(Blog registro : registros) { 
-                // Esta lógica Java é mantida para que você possa usá-la no seu CSS
-                String badgeClass = "";
-                if ("PENDENTE".equals(registro.getStatus())) {
-                    badgeClass = "warning";
-                } else if ("RESOLVIDO".equals(registro.getStatus())) {
-                    badgeClass = "success";
-                } else {
-                    badgeClass = "info";
-                }
-        %>
-        
-            <div class="registro-item"
-                 onclick="mostrarNoMapa(<%= registro.getLatitude() %>, <%= registro.getLongitude() %>, '<%= registro.getTitulo().replace("'", "\\'") %>', '<%= registro.getDescricao().replace("'", "\\'") %>')">
-                
-                
-                
-        <section class="conteudo-grid" id="grid-conteudo">
-            <div class="grid">
-                
-                <div class="conteudo">
+            <%-- Loop sobre a LISTA DE POSTS --%>
+            <% 
+                for(Blog post : posts) { 
+            %>
+            
+                <%-- O onclick do mapa foi removido, pois um post não tem lat/long direto --%>
+                <div class="registro-item">
                     
-                    <strong><%= registro.getTitulo() %></strong>
-                
-                <div class="texto-registro">
-                    <span class="registro-status status-<%= badgeClass %>">
-                        <%= registro.getStatus() %>
-                    </span>
-                </div>
-                    
-                <div class="data-registro">
-                    <small class="registro-data">
-                        <p><%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></p>
-                    </small>
-                </div>
-                
-                
-                   
-                    
-                </div>
-                    
-                    
-                    <img src="resources/img/papagaio.jpg" alt=""/>
-                    
-                
-                </div>
-                
-                
+                    <section class="conteudo-grid" id="grid-conteudo">
+                        <div class="grid">
+                            
+                            <div class="conteudo">
+                                
+                                <strong><%= post.getTitulo() %></strong>
+                                
+                                <div class="texto-registro">
+                                    <%-- Mostra o nome do autor vindo do JOIN --%>
+                                    <span class="registro-autor">
+                                        Por: <%= post.getNomeAutor() %>
+                                    </span>
+                                </div>
+                                
+                                <div class="data-registro">
+                                    <small class="registro-data">
+                                        <p><%= new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(post.getDataPublicacao()) %></p>
+                                    </small>
+                                </div>
+                                
+                            </div>
+                            
+                            <%-- Usa a foto_capa do banco de dados --%>
+                            <img src="<%= (post.getFotoCapa() != null ? post.getFotoCapa() : "resources/img/placeholder.jpg") %>" 
+                                 alt="<%= post.getTitulo() %>"
+                                 onerror="this.src='https://placehold.co/400x400/EEE/333?text=Sem+Foto'"/>
+                            
+                        </div>
+                    </div>
+                </section>
                 
             </div>
-        </section>
-                
-                
-                    
-        <% 
-            } // Fim do loop 
-        %>
-</div>
+            <% 
+                } // Fim do loop 
+            %>
+        </div>
         
         <div class="sidebar" id="sidebar-main">
             
             <div class="form-novo-registro">
                 <h5>Postar</h5>
-                <form method="POST" action="mapa.jsp" id="formRegistro">
+                <%-- Action aponta para blog.jsp --%>
+                <form method="POST" action="blog.jsp" id="formRegistro">
                     <input type="hidden" name="acao" value="inserir">
-                    <input type="hidden" name="latitude" id="inputLatitude">
-                    <input type="hidden" name="longitude" id="inputLongitude">
+                    
                     
                     <div class="mb-2">
                         <label class="form-label">Título</label>
@@ -159,26 +158,21 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" placeholder="Descreva o registro" rows="2"></textarea>
+                        <textarea class="form-control" name="descricao" placeholder="Escreva seu post..." rows="4"></textarea>
                     </div>
                     
                     <div class="mb-2">
-                        <small class="text-muted">
-                            Clique no mapa para selecionar a localização
-                        </small>
+                        <label class="form-label">URL da Foto de Capa</label>
+                        <input type="text" class="form-control" name="foto_capa" placeholder="http://.../imagem.jpg">
                     </div>
                     
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-primary" onclick="obterLocalizacao()">
-                            Usar Minha Localização
-                        </button>
+                    <div class="d-grid gap-2" style="margin-top: 20px;">
                         <button type="submit" class="btn btn-success">
-                            Salvar Registro
+                            Publicar Post
                         </button>
                     </div>
                 </form>
             </div>
-            
             
         </div>
         
@@ -186,88 +180,25 @@
         <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
             Postar
         </button>
-    </div>
         
         
         <script src="resources/js/bootstrap.js"></script>
-
         <script>
-        
-
-        // Função para focar no formulário (rolar a página até o formulário)
-        function focarNoFormulario() {
-            const sidebar = document.getElementById("sidebar-main");
-            const button = document.getElementById("btnNovoRegistro");
-            
-            
-            if (button.textContent === 'Fechar') {
-                button.textContent = 'Postar';
-            } else {
-                button.textContent = 'Fechar';
+            // Função para abrir/fechar sidebar
+            function focarNoFormulario() {
+                const sidebar = document.getElementById("sidebar-main");
+                const button = document.getElementById("btnNovoRegistro");
+                
+                if (button.textContent === 'Fechar') {
+                    button.textContent = 'Postar';
+                } else {
+                    button.textContent = 'Fechar';
+                }
+                
+                sidebar.classList.toggle('is-visible');
             }
             
-            sidebar.classList.toggle('is-visible');
-            
-            
-        }
-
-        // Função para mostrar um registro no mapa (quando clicado na lista)
-        function mostrarNoMapa(lat, lng, titulo, descricao) {
-            map.setView([lat, lng], 15);
-            
-            // Remove marcadores temporários anteriores
-            marcadoresRegistros.forEach(function(marcador) {
-                if (marcador._popup && marcador._popup._content && marcador._popup._content.includes('temporário')) {
-                    map.removeLayer(marcador);
-                }
-            });
-            
-            // Adiciona marcador temporário
-            var marcadorTemporario = L.marker([lat, lng]).addTo(map)
-                .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
-                .openPopup();
-                
-            marcadoresRegistros.push(marcadorTemporario);
-        }
-
-        // Adicionar os registros existentes no mapa
-        <% for(Blog registro : registros) { %>
-            var marcador = L.marker([<%= registro.getLatitude() %>, <%= registro.getLongitude() %>])
-                .addTo(map)
-                .bindPopup(`
-                    <h6><%= registro.getTitulo() %></h6>
-                    <p><%= registro.getDescricao() %></p>
-                    <small><strong>Status:</strong> <%= registro.getStatus() %></small>
-                    <small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>
-                `);
-                
-            marcadoresRegistros.push(marcador);
-        <% } %>
-
-
-        /*
-         * 
-        // Filtros
-        document.getElementById('filtro-categoria').addEventListener('change', aplicarFiltros);
-        document.getElementById('filtro-tipo').addEventListener('change', aplicarFiltros);
-
+        </script>
         
-        function aplicarFiltros() {
-            var filtroCategoria = document.getElementById('filtro-categoria').value;
-            var filtroTipo = document.getElementById('filtro-tipo').value;
-            
-            // Aqui você implementaria a lógica para filtrar os registros
-            // e atualizar o mapa conforme necessário
-            console.log('Filtros aplicados:', {
-                categoria: filtroCategoria,
-                tipo: filtroTipo
-            });
-        }
-        
-        */
-        
-        
-    </script>
-    
     </body>
 </html>
