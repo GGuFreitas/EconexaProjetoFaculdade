@@ -383,7 +383,7 @@
                 sidebar.classList.toggle('is-visible');
             }
 
-            // Função MELHORADA para mostrar registro no mapa
+            // Função  para mostrar registro no mapa
             function mostrarNoMapa(lat, lng, titulo, descricao) {
                 map.setView([lat, lng], 15);
 
@@ -398,16 +398,16 @@
                 } else {
                     console.warn('Marcador não encontrado para coordenadas:', lat, lng);
                     // Opcional: criar marcador temporário
-                    var marcadorTemporario = L.marker([lat, lng], {
-                        icon: L.divIcon({
-                            className: 'temp-marker',
-                            html: '<div style="background-color: #f39c12; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
-                            iconSize: [30, 30],
-                            iconAnchor: [15, 15]
-                        })
-                    }).addTo(map)
-                    .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
-                    .openPopup();
+//                    var marcadorTemporario = L.marker([lat, lng], {
+//                        icon: L.divIcon({
+//                            className: 'temp-marker',
+//                            html: '<div style="background-color: #f39c12; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"></div>',
+//                            iconSize: [30, 30],
+//                            iconAnchor: [15, 15]
+//                        })
+//                    }).addTo(map)
+//                    .bindPopup('<h6>' + titulo + '</h6><p>' + descricao + '</p><small>Visualização temporária</small>')
+//                    .openPopup();
 
                     marcadoresRegistros.push(marcadorTemporario);
                     marcadoresPorCoordenadas[coordenadaKey] = marcadorTemporario;
