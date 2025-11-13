@@ -71,7 +71,7 @@
       <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
         <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Mapa</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+        <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
       </ul>
     </div>

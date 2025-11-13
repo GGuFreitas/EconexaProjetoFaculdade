@@ -75,3 +75,44 @@ INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo
 ('Nova pavimentação', 'Rua recém-asfaltada no centro', CURRENT_TIMESTAMP, -15.785, -47.878, 'RESOLVIDO', 35),
 ('Árvore caída', 'Árvore caída bloqueando a rua', CURRENT_TIMESTAMP, -15.795, -47.880, 'PENDENTE', 25),
 ('Feira comunitária', 'Feira de produtos locais no bairro', CURRENT_TIMESTAMP, -15.782, -47.876, 'PENDENTE', 40);
+
+-- Criando tabelas do blog
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha_hash VARCHAR(255) NOT NULL,
+    perfil ENUM('MEMBRO', 'ADMIN') DEFAULT 'MEMBRO',
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS blog_post (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    descricao TEXT NOT NULL,
+    foto_capa VARCHAR(255), 
+    status_publicacao ENUM('RASCUNHO', 'PUBLICADO') DEFAULT 'RASCUNHO',
+    data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id BIGINT NOT NULL,
+    registro_id BIGINT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (registro_id) REFERENCES registro(id) ON DELETE SET NULL
+);
+
+INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
+('Admin', 'admin@econexa.com', 'senha', 'ADMIN');
+
+-- Simulação de post
+INSERT INTO blog_post (titulo, descricao, foto_capa, status_publicacao, usuario_id, registro_id)
+SELECT 
+    'Resolvido o buraco da Avenida Principal!',
+    'Equipes foram até a Avenida Principal e realizaram o reparo completo da via.',
+    'resources/img/reparo_avenida.jpg',
+    'PUBLICADO',
+    1,
+    id
+FROM registro
+WHERE id = 1;
