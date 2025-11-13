@@ -210,7 +210,7 @@
     <script src="resources/js/bootstrap.js"></script>
     <script>
         // Inicialização do mapa
-            var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
+            var map = L.map('mapa').setView([-23.5189, -46.1891], 13); // Coordenadas de Mgoi
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
