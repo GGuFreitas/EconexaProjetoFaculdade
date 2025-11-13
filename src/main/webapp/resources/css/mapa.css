@@ -87,7 +87,7 @@ body {
 }
 
 .main-header .container-fluid {
-  position: relative; 
+  position: relative;
 }
 
 /* Container do mapa */
@@ -284,6 +284,9 @@ body {
         gap: 6px;
         font-size: 1.6rem;
     }
+    .main-header .container-fluid {
+        padding-right: 0px;
+}
 }
 
 @media (min-width: 768px) {
@@ -408,4 +411,19 @@ body {
     border-color: #86b7fe;
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        tranform: translateY (-10px);
+    }
+    to {
+        opacity: 1;
+        tranform: translateY (0px);
+    }
+}
+
+body {
+    animation: fadeInPage 1s ease-out;
 }

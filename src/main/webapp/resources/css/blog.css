@@ -4,7 +4,13 @@ body {
     padding: 0;
     background-color: black;
     padding-top: 80px;
+    background: url("../img/background-index-blur.png") center/cover no-repeat;
+    background-attachment: fixed;
+    animation: fadeInPage 1s ease-out;
+
 }
+
+
 
 /* Lista de registros */
 .lista-registros {
@@ -91,7 +97,7 @@ body {
 }
 
 .main-header .container-fluid {
-  position: relative; 
+  position: relative;
 }
 
 
@@ -177,7 +183,7 @@ body {
     text-align: right;
 }
 
-.grid .conteudo .texto-registro, .grid .conteudo .data-registro p {
+.grid .conteudo .texto-registro, .grid .conteudo .data-registro p, .grid .descricao-registro {
     font-size: 1rem;
     text-align: right;
 }
@@ -258,6 +264,9 @@ body {
 
 
 @media (max-width: 768px) {
+    .main-header .container-fluid {
+        padding-right: 0px;
+    }
     .grid {
         grid-template-columns: 1fr;
     }
@@ -397,3 +406,15 @@ body {
     display: block;
     margin-top: 5px;
 }
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY (-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY (0px);
+    }
+}
+
