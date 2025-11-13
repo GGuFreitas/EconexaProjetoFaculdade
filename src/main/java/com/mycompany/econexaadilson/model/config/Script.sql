@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS blog_post (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(200) NOT NULL,
     descricao TEXT NOT NULL,
-    foto_capa VARCHAR(255), 
+    foto_capa MEDIUMBLOB NULL, 
     status_publicacao ENUM('RASCUNHO', 'PUBLICADO') DEFAULT 'RASCUNHO',
     data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     usuario_id BIGINT NOT NULL,
@@ -105,12 +105,16 @@ CREATE TABLE IF NOT EXISTS blog_post (
 INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
 ('Admin', 'admin@econexa.com', 'senha', 'ADMIN');
 
--- Simulação de post
+
+
+
+
+----- Simulação de post (opcional)
 INSERT INTO blog_post (titulo, descricao, foto_capa, status_publicacao, usuario_id, registro_id)
 SELECT 
     'Resolvido o buraco da Avenida Principal!',
     'Equipes foram até a Avenida Principal e realizaram o reparo completo da via.',
-    'resources/img/reparo_avenida.jpg',
+    'SEM FOTO',
     'PUBLICADO',
     1,
     id
