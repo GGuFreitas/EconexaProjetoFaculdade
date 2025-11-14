@@ -195,14 +195,17 @@ body {
   .index-main-text p{
     text-align: center;
   }
-
+  .container-fluid {
+    padding-left: 8px;
+  }
   .navbar-nav {
     gap: 6px;
     font-size: 1.6rem;
+    align-items: flex-end;
+    margin-right: 4px;
   }
-  
-  .container-fluid {
-    padding-left: 8px;
+  .nav-item {
+      width: 50%;
   }
 }
 
