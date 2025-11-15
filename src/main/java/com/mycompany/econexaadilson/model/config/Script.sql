@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Other/SQLTemplate.sql to edit this template
  */
 /**
- * Author:  gufre
+ * Author:  gufre, jhonny
  * Created: 20 de out. de 2025
  */
 
@@ -68,13 +68,13 @@ INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
 
 -- Inserir alguns registros de exemplo para testar o mapa
 INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
-('Buraco na Avenida Principal', 'Grande buraco na pista da Avenida Central, próximo ao número 123', CURRENT_TIMESTAMP, -15.792, -47.882, 'PENDENTE', 21),
-('Poste de luz queimado', 'Poste não funciona há 3 dias na Rua das Flores', CURRENT_TIMESTAMP, -15.786, -47.875, 'EM_ANDAMENTO', 22),
-('Lixo acumulado', 'Acúmulo de lixo na praça do bairro', CURRENT_TIMESTAMP, -15.788, -47.879, 'RESOLVIDO', 23),
-('Parque bem conservado', 'Parque da cidade está impecável', CURRENT_TIMESTAMP, -15.790, -47.885, 'PENDENTE', 31),
-('Nova pavimentação', 'Rua recém-asfaltada no centro', CURRENT_TIMESTAMP, -15.785, -47.878, 'RESOLVIDO', 35),
-('Árvore caída', 'Árvore caída bloqueando a rua', CURRENT_TIMESTAMP, -15.795, -47.880, 'PENDENTE', 25),
-('Feira comunitária', 'Feira de produtos locais no bairro', CURRENT_TIMESTAMP, -15.782, -47.876, 'PENDENTE', 40);
+('Buraco na Av. Narciso Yague', 'Buraco grande perto do shopping de Mogi', CURRENT_TIMESTAMP, -23.518, -46.191, 'PENDENTE', 21),
+('Poste queimado na Rua das Flores', 'Poste apagado em frente ao número 50, no bairro Vila Nova', CURRENT_TIMESTAMP, -23.530, -46.185, 'EM_ANDAMENTO', 22),
+('Lixo na Praça da Matriz', 'Lixeiras transbordando na Praça Coronel Benedito de Almeida', CURRENT_TIMESTAMP, -23.522, -46.190, 'RESOLVIDO', 23),
+('Parque Centenário limpo', 'Parque Centenário está muito bem cuidado, ótimo para lazer', CURRENT_TIMESTAMP, -23.513, -46.208, 'PENDENTE', 31),
+('Asfalto novo no Centro', 'Rua Dr. Deodato Wertheimer recapeada perto da estação', CURRENT_TIMESTAMP, -23.521, -46.188, 'RESOLVIDO', 35),
+('Árvore em risco na Vila Oliveira', 'Árvore grande com galhos quebrando na R. Pres. Campos Sales', CURRENT_TIMESTAMP, -23.508, -46.185, 'PENDENTE', 25),
+('Movimento no Mercadão', 'Mercado Municipal com grande variedade de produtos locais', CURRENT_TIMESTAMP, -23.522, -46.187, 'PENDENTE', 40);
 
 -- Criando tabelas do blog
 

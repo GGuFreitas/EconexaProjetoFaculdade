@@ -281,9 +281,14 @@ body {
     }
     
     .navbar-nav {
-        gap: 6px;
-        font-size: 1.6rem;
-    }
+    gap: 6px;
+    font-size: 1.6rem;
+    align-items: flex-end;
+    margin-right: 4px;
+  }
+  .nav-item {
+      width: 50%;
+  }
     .main-header .container-fluid {
         padding-right: 0px;
 }

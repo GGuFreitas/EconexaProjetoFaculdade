@@ -209,8 +209,16 @@
     <script src="resources/js/leaflet.js" type="text/javascript"></script>
     <script src="resources/js/bootstrap.js"></script>
     <script>
-        // Inicialização do mapa
-            var map = L.map('mapa').setView([-15.788, -47.879], 13); // Coordenadas de Brasília
+        var southWest = L.latLng(-23.65, -46.35); // Suzano
+        var northEast = L.latLng(-23.40, -46.00); // Guararema
+        var bounds = L.latLngBounds(southWest, northEast);
+        var map = L.map('mapa', {
+            center: [-23.5189, -46.1891], 
+            zoom: 13,
+            maxBounds: bounds,
+            minZoom: 12,        
+            maxZoom: 18         
+        });
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
