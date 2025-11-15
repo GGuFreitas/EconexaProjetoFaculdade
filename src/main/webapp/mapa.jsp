@@ -118,54 +118,53 @@
             -->
             
             <div class="form-novo-registro">
-                <h5>Novo Registro</h5>
-                <form method="POST" action="mapa.jsp" id="formRegistro"  enctype="multipart/form-data">
-                    <input type="hidden" name="acao" value="inserir">
-                    <input type="hidden" name="latitude" id="inputLatitude">
-                    <input type="hidden" name="longitude" id="inputLongitude">
-                    
-                    <div class="mb-2">
-                        <label class="form-label">Título</label>
-                        <input type="text" class="form-control" name="titulo" placeholder="Digite o título" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" placeholder="Descreva o registro" rows="2"></textarea>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Tipo</label>
-                        <select class="form-select" name="tipoRegistroId" required>
-                            <option value="">Selecione o tipo</option>
-                            <% for(TipoRegistro tipo : tiposRegistro) { %>
-                                <option value="<%= tipo.getId() %>">
-                                    <%= tipo.getNome() %>
-                                </option>
-                            <% } %>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-2">
-                            <label class="form-label">Foto (Opcional)</label>
-                            <input type="file" class="form-control" name="foto" id="inputFoto" accept="image/*" capture="environment">
-                            <small class="text-muted">Você pode tirar uma foto ou escolher da galeria</small>
-                    </div>
-                        
-                    <div class="mb-2">
-                        <small class="text-muted">
-                            Clique no mapa para selecionar a localização
-                        </small>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-primary" onclick="obterLocalizacao()">
-                            Usar Minha Localização
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                            Salvar Registro
-                        </button>
-                    </div>
-                </form>
-            </div>
+                  <h5>Novo Registro</h5>
+                  <form method="POST" action="SalvarRegistroServlet" id="formRegistro" enctype="multipart/form-data">
+                      <input type="hidden" name="latitude" id="inputLatitude">
+                      <input type="hidden" name="longitude" id="inputLongitude">
+
+                      <div class="mb-2">
+                          <label class="form-label">Título</label>
+                          <input type="text" class="form-control" name="titulo" placeholder="Digite o título" required>
+                      </div>
+                      <div class="mb-2">
+                          <label class="form-label">Descrição</label>
+                          <textarea class="form-control" name="descricao" placeholder="Descreva o registro" rows="2"></textarea>
+                      </div>
+                      <div class="mb-2">
+                          <label class="form-label">Tipo</label>
+                          <select class="form-select" name="tipoRegistroId" required>
+                              <option value="">Selecione o tipo</option>
+                              <% for(TipoRegistro tipo : tiposRegistro) { %>
+                                  <option value="<%= tipo.getId() %>">
+                                      <%= tipo.getNome() %>
+                                  </option>
+                              <% } %>
+                          </select>
+                      </div>
+
+                      <div class="mb-2">
+                          <label class="form-label">Foto (Opcional)</label>
+                          <input type="file" class="form-control" name="foto" id="inputFoto" accept="image/*" capture="environment">
+                          <small class="text-muted">Você pode tirar uma foto ou escolher da galeria</small>
+                      </div>
+
+                      <div class="mb-2">
+                          <small class="text-muted">
+                              Clique no mapa para selecionar a localização
+                          </small>
+                      </div>
+
+                      <div class="d-grid gap-2">
+                          <button type="button" class="btn btn-primary" onclick="obterLocalizacao()">
+                              Usar Minha Localização
+                          </button>
+                          <button type="submit" class="btn btn-success">
+                              Salvar Registro
+                          </button>
+                      </div>
+                  </form>
+              </div>
             
             <div class="lista-registros">
                 <h5>Registros (<%= registros.size() %>)</h5>
@@ -241,44 +240,59 @@
             <% } %>
 
             // Configurar ícones personalizados 
-            function criarIconeDetalhado(categoria, status) {
+        function criarIconeDetalhado(categoria, status) {
                 console.log('Criando ícone:', 'Categoria:', categoria, 'Status:', status);
 
-                var cor, simbolo;
+                var cor, simbolo, corBorda;
 
-                // Forçar cores baseadas apenas na categoria (ignorar status por enquanto)
+                // Cores baseadas na categoria
                 if (categoria === 'POSITIVO') {
                     cor = '#27ae60'; // VERDE
+                    corBorda = '#219653';
                     simbolo = '✓';
                 } else if (categoria === 'NEGATIVO') {
                     cor = '#e74c3c'; // VERMELHO  
+                    corBorda = '#c0392b';
                     simbolo = '⚠';
                 } else {
                     cor = '#3498db'; // AZUL (fallback)
+                    corBorda = '#2980b9';
                     simbolo = '●';
                 }
 
+                // Adicionar efeito baseado no status
+                var efeitoStatus = '';
+                if (status === 'RESOLVIDO') {
+                    efeitoStatus = 'box-shadow: 0 0 0 3px #27ae60;';
+                } else if (status === 'EM_ANDAMENTO') {
+                    efeitoStatus = 'box-shadow: 0 0 0 3px #f39c12;';
+                } else {
+                    efeitoStatus = 'box-shadow: 0 2px 10px rgba(0,0,0,0.3);';
+                }
+
                 return L.divIcon({
-                    className: 'custom-marker',
+                    className: 'custom-marker-' + categoria.toLowerCase(),
                     html: `
                         <div style="
                             background-color: ${cor}; 
-                            width: 32px; 
-                            height: 32px; 
+                            width: 36px; 
+                            height: 36px; 
                             border-radius: 50%; 
-                            border: 3px solid white; 
-                            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                            border: 3px solid ${corBorda}; 
+                            ${efeitoStatus}
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             color: white;
                             font-weight: bold;
-                            font-size: 16px;
+                            font-size: 18px;
                             cursor: pointer;
+                            transition: all 0.3s ease;
                         ">${simbolo}</div>
                     `,
-                    iconSize: [38, 38],
-                    iconAnchor: [19, 19]
+                    iconSize: [42, 42],
+                    iconAnchor: [21, 21],
+                    popupAnchor: [0, -21]
                 });
             }
 
@@ -296,18 +310,20 @@
                 var marcador = L.marker([lat, lng], {icon: icone})
                     .addTo(map)
                     .bindPopup(
-                        '<div class="popup-content">' +
-                        '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
-                        '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
-                        '<div class="popup-details">' +
-                        '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
-                        '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
-                        '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
-                        '</div>' +
-                        '</div>'
-                    );
-
-                marcadoresRegistros.push(marcador);
+                       '<div class="popup-content">' +
+                       '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
+                       '<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" ' +
+                       'style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" ' +
+                       'onerror="this.style.display=\'none\'">' +
+                       '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
+                       '<div class="popup-details">' +
+                       '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
+                       '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
+                       '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
+                       '</div>' +
+                       '</div>'
+                   );
+                                   marcadoresRegistros.push(marcador);
                 // Guarda referência por coordenadas
                 marcadoresPorCoordenadas[coordenadaKey] = marcador;
             <% } %>

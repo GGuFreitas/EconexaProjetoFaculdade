@@ -8,6 +8,7 @@ package com.mycompany.econexaadilson.model;
  *
  * @author gufre
  */
+import java.io.InputStream;
 import java.util.Date;
 
 public class Registro {
@@ -17,10 +18,11 @@ public class Registro {
     private Date data;
     private Double latitude;
     private Double longitude;
-    private String foto;
     private String status;
     private TipoRegistro tipoRegistro;
-    
+    private InputStream fotoStream; 
+    private byte[] fotoBytes;
+
     // Construtores, getters e setters
     public Registro() {}
     
@@ -33,7 +35,6 @@ public class Registro {
         this.data = data;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.foto = foto;
         this.status = status;
         this.tipoRegistro = tipoRegistro;
     }
@@ -57,12 +58,15 @@ public class Registro {
     public Double getLongitude() { return longitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
     
-    public String getFoto() { return foto; }
-    public void setFoto(String foto) { this.foto = foto; }
-    
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     
     public TipoRegistro getTipoRegistro() { return tipoRegistro; }
     public void setTipoRegistro(TipoRegistro tipoRegistro) { this.tipoRegistro = tipoRegistro; }
+    
+    public InputStream getFotoStream() { return fotoStream; }
+    public void setFotoStream(InputStream fotoStream) { this.fotoStream = fotoStream; }
+    
+    public byte[] getFotoBytes() { return fotoBytes; }
+    public void setFotoBytes(byte[] fotoBytes) { this.fotoBytes = fotoBytes; }
 }
