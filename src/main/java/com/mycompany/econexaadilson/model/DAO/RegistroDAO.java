@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RegistroDAO {
     
-    public boolean inserir(Registro registro) {
+   public boolean inserir(Registro registro) {
         String sql = "INSERT INTO registro (titulo, descricao, data, latitude, longitude, foto, status, tipo_registro_id) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         
@@ -30,7 +30,14 @@ public class RegistroDAO {
             stmt.setTimestamp(3, new Timestamp(registro.getData().getTime()));
             stmt.setDouble(4, registro.getLatitude());
             stmt.setDouble(5, registro.getLongitude());
-            stmt.setString(6, registro.getFoto());
+            
+            // Modificado para BLOB
+            if (registro.getFotoStream() != null) {
+                stmt.setBlob(6, registro.getFotoStream());
+            } else {
+                stmt.setNull(6, java.sql.Types.BLOB);
+            }
+            
             stmt.setString(7, registro.getStatus());
             stmt.setLong(8, registro.getTipoRegistro().getId());
             
@@ -40,6 +47,31 @@ public class RegistroDAO {
             return false;
         }
     }
+   
+   
+     // Método para buscar imagem por ID do registro
+    public byte[] getImagemById(Long registroId) {
+        String sql = "SELECT foto FROM registro WHERE id = ?";
+        byte[] imgBytes = null;
+        
+        try (Connection conn = ConexaoBanco.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setLong(1, registroId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Blob blob = rs.getBlob("foto");
+                    if (blob != null) {
+                        imgBytes = blob.getBytes(1, (int) blob.length());
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return imgBytes;
+    }
+   
     
     public List<Registro> listarTodos() {
         List<Registro> registros = new ArrayList<>();
@@ -61,9 +93,7 @@ public class RegistroDAO {
                 registro.setData(rs.getTimestamp("data"));
                 registro.setLatitude(rs.getDouble("latitude"));
                 registro.setLongitude(rs.getDouble("longitude"));
-                registro.setFoto(rs.getString("foto"));
-                registro.setStatus(rs.getString("status"));
-                
+                registro.setStatus(rs.getString("status"));          
                 TipoRegistro tipo = new TipoRegistro();
                 tipo.setId(rs.getLong("tipo_registro_id"));
                 tipo.setNome(rs.getString("tipo_nome"));
@@ -80,7 +110,7 @@ public class RegistroDAO {
         return registros;
     }
     
-    public Registro buscarPorId(Long id) {
+       public Registro buscarPorIdComImagem(Long id) {
         String sql = "SELECT r.*, tr.nome as tipo_nome, tr.categoria as tipo_categoria, " +
                     "tr.descricao as tipo_descricao, tr.icone as tipo_icone " +
                     "FROM registro r " +
@@ -101,8 +131,13 @@ public class RegistroDAO {
                 registro.setData(rs.getTimestamp("data"));
                 registro.setLatitude(rs.getDouble("latitude"));
                 registro.setLongitude(rs.getDouble("longitude"));
-                registro.setFoto(rs.getString("foto"));
                 registro.setStatus(rs.getString("status"));
+                
+                // Carrega a imagem
+                Blob blob = rs.getBlob("foto");
+                if (blob != null) {
+                    registro.setFotoBytes(blob.getBytes(1, (int) blob.length()));
+                }
                 
                 TipoRegistro tipo = new TipoRegistro();
                 tipo.setId(rs.getLong("tipo_registro_id"));
@@ -133,7 +168,6 @@ public class RegistroDAO {
             stmt.setTimestamp(3, new Timestamp(registro.getData().getTime()));
             stmt.setDouble(4, registro.getLatitude());
             stmt.setDouble(5, registro.getLongitude());
-            stmt.setString(6, registro.getFoto());
             stmt.setString(7, registro.getStatus());
             stmt.setLong(8, registro.getTipoRegistro().getId());
             stmt.setLong(9, registro.getId());

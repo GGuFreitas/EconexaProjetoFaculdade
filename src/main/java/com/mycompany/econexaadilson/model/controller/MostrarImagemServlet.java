@@ -7,6 +7,7 @@ package com.mycompany.econexaadilson.model.controller;
 
 
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
+import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.ServletException;
@@ -22,10 +23,20 @@ public class MostrarImagemServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            Long postId = Long.parseLong(request.getParameter("id"));
+            Long id = Long.parseLong(request.getParameter("id"));
+            String tipo = request.getParameter("tipo"); // "blog" ou "registro"
             
-            BlogDAO dao = new BlogDAO();
-            byte[] imgBytes = dao.getImagemById(postId);
+            byte[] imgBytes = null;
+            
+            if ("registro".equals(tipo)) {
+                // Busca imagem do registro
+                RegistroDAO registroDao = new RegistroDAO();
+                imgBytes = registroDao.getImagemById(id);
+            } else {
+                // Default para blog (mantém compatibilidade)
+                BlogDAO blogDao = new BlogDAO();
+                imgBytes = blogDao.getImagemById(id);
+            }
             
             if (imgBytes != null && imgBytes.length > 0) {
                 response.setContentType("image/jpeg"); 
@@ -35,6 +46,7 @@ public class MostrarImagemServlet extends HttpServlet {
                 os.flush();
                 os.close();
             } else {
+                // Envia uma imagem placeholder
                 response.sendRedirect("resources/img/placeholder.jpg");
             }
             
