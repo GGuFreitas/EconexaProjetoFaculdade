@@ -65,12 +65,14 @@ CREATE TABLE IF NOT EXISTS registro (
 ('Segurança Pública', 'POSITIVO', 'Ações de segurança, policiamento, iluminação preventiva', 'fa-shield-alt'),
 ('Cultura e Lazer', 'POSITIVO', 'Eventos culturais, espaços de lazer, atividades comunitárias', 'fa-theater-masks'),
 ('Ação Comunitária', 'POSITIVO', 'Mutirões, projetos sociais, voluntariado, união de vizinhos', 'fa-users'),
-('Infraestrutura Nova', 'POSITIVO', 'Novas obras, equipamentos públicos, melhorias urbanas', 'fa-building');
+('Infraestrutura Nova', 'POSITIVO', 'Novas obras, equipamentos públicos, melhorias urbanas', 'fa-building'),
 ('Proteção Animal', 'POSITIVO', 'Campanhas de castração, abrigos, cuidados com animais de rua', 'fa-heart'),
 ('Reciclagem', 'POSITIVO', 'Pontos de coleta seletiva, compostagem, educação ambiental', 'fa-recycle'),
-('Conservação Natural', 'POSITIVO', 'Proteção de nascentes, áreas de preservação, biodiversidade', 'fa-mountain')
+('Conservação Natural', 'POSITIVO', 'Proteção de nascentes, áreas de preservação, biodiversidade', 'fa-mountain');
+
 -- Inserir alguns registros de exemplo para testar o mapa
- INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
+
+INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
 ('Buraco na Av. Narciso Yague', 'Buraco grande perto do shopping de Mogi', CURRENT_TIMESTAMP, -23.518, -46.191, 'PENDENTE', 1),
 ('Poste queimado na Rua das Flores', 'Poste apagado em frente ao número 50, no bairro Vila Nova', CURRENT_TIMESTAMP, -23.530, -46.185, 'EM_ANDAMENTO', 2),
 ('Lixo na Praça da Matriz', 'Lixeiras transbordando na Praça Coronel Benedito de Almeida', CURRENT_TIMESTAMP, -23.522, -46.190, 'RESOLVIDO', 3),
