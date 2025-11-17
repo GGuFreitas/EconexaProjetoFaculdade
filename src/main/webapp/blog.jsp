@@ -1,15 +1,22 @@
 <%-- 
  *
  * @author Jhonny
- */
---%>
+ --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.Blog"%>
+<%@page import="com.mycompany.econexaadilson.model.Usuario"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Date"%>
 
 <%
+    // VERIFICAÇÃO DE SESSÃO - CRÍTICO!
+    Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+    if (usuario == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+
     BlogDAO postDAO = new BlogDAO();
     List<Blog> posts = postDAO.listarTodosPublicados();
     
@@ -27,22 +34,55 @@
     </head>
     <body>
         
+        <!-- HEADER ATUALIZADO COM CONTROLE DE USUÁRIO -->
         <header class="main-header">
-             <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
+            <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="#">
                         <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
                     </a>
+
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
+
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
                             <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
-                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Mapa</a></li>
+                            <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+                            <% if (usuario.isAdmin()) { %>
+                                <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>
+                            <% } %>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <%
+                                    // Pegar apenas o primeiro nome
+                                    String nomeCompleto = usuario.getNome();
+                                    String primeiroNome = nomeCompleto.split(" ")[0];
+                                    %>
+                                    <%= primeiroNome %>
+                                    <% if (usuario.isAdmin()) { %>
+                                        <span class="badge bg-danger ms-1">ADMIN</span>
+                                    <% } %>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li class="px-3 py-2">
+                                        <small class="text-muted">Logado como</small><br>
+                                        <strong><%= usuario.getNome() %></strong><br>
+                                        <small class="text-muted"><%= usuario.getEmail() %></small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="LoginServlet">
+                                        <i class="fas fa-sign-out-alt"></i> Sair
+                                    </a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -50,16 +90,7 @@
         </header>
         
         <div class="lista-registros">
-
-            <div class="perfil">
-                 <div class="perfil-avatar">
-                    <img src="https://placehold.co/50x50/333/FFF?text=A" alt="Avatar Admin"/>
-                </div>
-                <div class="perfil-info">
-                    <strong>Admin</strong>
-                    <small>@admin_econexa</small>
-                </div>
-            </div>
+            <!-- REMOVIDO: Seção fixa do perfil admin -->
             
             <% if (sucesso != null) { %>
                 <div class="alert alert-success"><%= sucesso %></div>

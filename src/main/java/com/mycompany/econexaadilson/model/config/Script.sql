@@ -69,10 +69,8 @@ CREATE TABLE IF NOT EXISTS registro (
 ('Proteção Animal', 'POSITIVO', 'Campanhas de castração, abrigos, cuidados com animais de rua', 'fa-heart'),
 ('Reciclagem', 'POSITIVO', 'Pontos de coleta seletiva, compostagem, educação ambiental', 'fa-recycle'),
 ('Conservação Natural', 'POSITIVO', 'Proteção de nascentes, áreas de preservação, biodiversidade', 'fa-mountain');
-
 -- Inserir alguns registros de exemplo para testar o mapa
-
-INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
+ INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo_registro_id) VALUES
 ('Buraco na Av. Narciso Yague', 'Buraco grande perto do shopping de Mogi', CURRENT_TIMESTAMP, -23.518, -46.191, 'PENDENTE', 1),
 ('Poste queimado na Rua das Flores', 'Poste apagado em frente ao número 50, no bairro Vila Nova', CURRENT_TIMESTAMP, -23.530, -46.185, 'EM_ANDAMENTO', 2),
 ('Lixo na Praça da Matriz', 'Lixeiras transbordando na Praça Coronel Benedito de Almeida', CURRENT_TIMESTAMP, -23.522, -46.190, 'RESOLVIDO', 3),
@@ -107,14 +105,13 @@ CREATE TABLE IF NOT EXISTS blog_post (
     FOREIGN KEY (registro_id) REFERENCES registro(id) ON DELETE SET NULL
 );
 
+-- Admin com senha "admin123" - criptografada
 INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
-('Admin', 'admin@econexa.com', 'senha', 'ADMIN');
+('Admin', 'admin@econexa.com', '$2a$10$8K1p/a0dRTlB0ZQ1Dbo2Au5R7Sz2bLItcu.8Fd.TuJXTFGYm6L1.K', 'ADMIN');
 
 
 
-
-
------ Simulação de post (opcional)
+-- Simulação de post (opcional)
 INSERT INTO blog_post (titulo, descricao, foto_capa, status_publicacao, usuario_id, registro_id)
 SELECT 
     'Resolvido o buraco da Avenida Principal!',
