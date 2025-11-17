@@ -360,48 +360,85 @@ body {
     line-height: 1.4;
 }
 
+/* ===== CORREÇÃO PARA IMAGENS NOS POPUPS ===== */
+.leaflet-popup-content img,
+.popup-image {
+    max-width: 100% !important;
+    max-height: 150px !important;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Garantir que o popup-content contenha a imagem */
+.popup-content {
+    overflow: hidden;
+}
+
+/* Melhorar visibilidade dos detalhes do popup */
 .popup-details {
-    border-top: 1px solid #ecf0f1;
-    padding-top: 8px;
-    margin-top: 8px;
+    background: rgba(248, 249, 250, 0.9);
+    border-top: 2px solid #e9ecef;
+    padding: 12px;
+    margin: 10px -12px -12px -12px;
+    border-radius: 0 0 8px 8px;
+    clear: both;
 }
 
 .popup-details small {
     display: block;
-    margin-bottom: 3px;
-    color: #7f8c8d;
+    margin-bottom: 4px;
+    color: #495057;
     font-size: 12px;
 }
 
-/* Estilos para os marcadores */
-.custom-marker {
+.popup-details strong {
+    color: #212529;
+    font-weight: 700;
+}
+
+/* Mobile: imagens menores */
+@media (max-width: 768px) {
+    .leaflet-popup-content img,
+    .popup-image {
+        max-height: 120px !important;
+    }
+}
+
+/* ===== ESTILOS PARA OS NOVOS ÍCONES ===== */
+.leaflet-marker-icon {
     background: transparent !important;
     border: none !important;
 }
 
-.temp-marker {
-    background: transparent !important;
-    border: none !important;
+/* Hover para os novos ícones */
+.icone-registro div {
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.selection-marker {
-    background: transparent !important;
-    border: none !important;
-}
-
-.location-marker {
-    background: transparent !important;
-    border: none !important;
-}
-
-/* Efeito hover nos marcadores */
-.custom-marker:hover div,
-.temp-marker:hover div,
-.selection-marker:hover div,
-.location-marker:hover div {
-    transform: scale(1.15);
-    transition: transform 0.2s ease;
+.icone-registro div:hover {
+    transform: scale(1.3);
     z-index: 1000;
+    filter: brightness(1.1);
+}
+
+.icone-selecao div {
+    transition: transform 0.2s ease;
+}
+
+.icone-selecao div:hover {
+    transform: rotate(45deg) scale(1.2);
+}
+
+.icone-localizacao div {
+    transition: transform 0.2s ease;
+}
+
+.icone-localizacao div:hover {
+    transform: scale(1.2);
 }
 
 /* Estilos para o campo de arquivo */
@@ -421,14 +458,22 @@ body {
 @keyframes fadeInPage {
     from {
         opacity: 0;
-        tranform: translateY (-10px);
+        transform: translateY(-10px);  
     }
     to {
         opacity: 1;
-        tranform: translateY (0px);
+        transform: translateY(0px); 
     }
 }
 
 body {
     animation: fadeInPage 1s ease-out;
+}
+
+/* Mobile: imagens menores */
+@media (max-width: 768px) {
+    .leaflet-popup-content img,
+    .popup-image {
+        max-height: 120px !important;
+    }
 }

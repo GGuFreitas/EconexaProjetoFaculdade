@@ -10,10 +10,10 @@
 <%@page import="com.mycompany.econexaadilson.model.TipoRegistro"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.econexa.model.*" %>
-<%@ page import="com.econexa.dao.*" %>
 <%@ page import="java.util.Date" %>
 <%
+       
+    
     // Processamento de ações
     String acao = request.getParameter("acao");
     String tipoAcao = request.getParameter("tipoAcao");
@@ -149,61 +149,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="resources/css/style-index.css" rel="stylesheet" type="text/css"/>
-    <link href="resources/css/style-mapa.css" rel="stylesheet" type="text/css"/>
-    <style>
-        .admin-container {
-            max-width: 1200px;
-            margin: 80px auto 20px;
-            padding: 20px;
-        }
-        
-        .tabela-registros {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .badge-positivo {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .badge-negativo {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .btn-acao {
-            padding: 0.25rem 0.5rem;
-            margin: 0 2px;
-            font-size: 0.875rem;
-        }
-        
-        .form-section {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .nav-tabs .nav-link.active {
-            background-color: #fff;
-            border-bottom-color: #fff;
-        }
-        
-        .tab-content {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            padding: 20px;
-        }
-    </style>
+    <link href="resources/css/admin.css" rel="stylesheet" type="text/css"/>
 </head>
-<body>
+<body  class="admin-body">
     <header class="main-header">
         <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
             <div class="container-fluid">
@@ -273,10 +221,14 @@
                                     <select class="form-select" name="tipoRegistroId" required>
                                         <option value="">Selecione o tipo</option>
                                         <% for(TipoRegistro tipo : tiposRegistro) { %>
-                                            <option value="<%= tipo.getId() %>" 
-                                                <%= registroEdit != null && registroEdit.getTipoRegistro().getId().equals(tipo.getId()) ? "selected" : "" %>>
-                                                <%= tipo.getNome() %>
-                                            </option>
+                                            <% if (registroEdit != null && registroEdit.getTipoRegistro() != null) { %>
+                                                <option value="<%= tipo.getId() %>" 
+                                                    <%= registroEdit.getTipoRegistro().getId().equals(tipo.getId()) ? "selected" : "" %>>
+                                                    <%= tipo.getNome() %>
+                                                </option>
+                                            <% } else { %>
+                                                <option value="<%= tipo.getId() %>"><%= tipo.getNome() %></option>
+                                            <% } %>
                                         <% } %>
                                     </select>
                                 </div>
