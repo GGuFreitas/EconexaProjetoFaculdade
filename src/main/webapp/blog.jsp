@@ -88,7 +88,6 @@
         </header>
         
         <div class="lista-registros">
-            <!-- REMOVIDO: Seção fixa do perfil admin -->
             
             <% if (sucesso != null) { %>
                 <div class="alert alert-success"><%= sucesso %></div>
@@ -125,8 +124,7 @@
                             </div>
                             
                             <img src="MostrarImagemServlet?id=<%= post.getId() %>" 
-                                 alt="<%= post.getTitulo() %>"
-                                 onerror="this.src='https://placehold.co/400x400/EEE/333?text=Sem+Foto'"/>
+                                 alt="<%= post.getTitulo() %>"/>
                         </div>
                     </section>
                 </div>
