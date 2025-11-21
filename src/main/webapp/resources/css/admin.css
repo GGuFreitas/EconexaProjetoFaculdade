@@ -20,8 +20,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-/* ===== HEADER ===== */
-/* (MANTENHA TODO O CSS DO HEADER que estava no style-admin.css) */
 .main-header {
     background-color: transparent;
     position: fixed;
@@ -95,6 +93,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     width: auto;
     display: inline-block;
 }
+
+.navbar-brand {
+    padding: 0.5rem 0;
+}
+
+.navbar-logo {
+    height: 40px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-logo:hover {
+    transform: scale(1.05);
+}
+
+
 
 .main-header .container-fluid {
     position: relative;

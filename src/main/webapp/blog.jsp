@@ -10,7 +10,6 @@
 <%@page import="java.util.Date"%>
 
 <%
-    // VERIFICAÇÃO DE SESSÃO - CRÍTICO!
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
     if (usuario == null) {
         response.sendRedirect("login.jsp");
@@ -34,7 +33,6 @@
     </head>
     <body>
         
-        <!-- HEADER ATUALIZADO COM CONTROLE DE USUÁRIO -->
         <header class="main-header">
             <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
                 <div class="container-fluid">
@@ -50,8 +48,8 @@
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
                             <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Mapa</a></li>
-                            <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
+                            <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
                             <% if (usuario.isAdmin()) { %>
                                 <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>

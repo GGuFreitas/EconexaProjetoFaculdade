@@ -91,7 +91,6 @@
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <%
-                                // Pegar apenas o primeiro nome
                                 String nomeCompleto = usuario.getNome();
                                 String primeiroNome = nomeCompleto.split(" ")[0];
                                 %>

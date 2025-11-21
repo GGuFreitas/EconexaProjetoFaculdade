@@ -8,9 +8,18 @@
 <%@page import="com.mycompany.econexaadilson.model.DAO.TipoRegistroDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.Registro"%>
 <%@page import="com.mycompany.econexaadilson.model.TipoRegistro"%>
+<%@page import="com.mycompany.econexaadilson.model.Usuario"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Date" %>
+<%
+    // Verificar se usuário está logado
+    Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+    if (usuario == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <%
        
     
@@ -153,27 +162,58 @@
 </head>
 <body  class="admin-body">
     <header class="main-header">
-        <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="index.jsp">
-                    <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="admin.jsp">Gerenciar</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
-                    </ul>
+            <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
+                <div class="container-fluid">
+                    <a class="navbar-brand" href="#">
+                        <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
+                            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
+                            <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+                            <% if (usuario.isAdmin()) { %>
+                                <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Admin</a></li>
+                            <% } %>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <%
+                                    // Pegar apenas o primeiro nome
+                                    String nomeCompleto = usuario.getNome();
+                                    String primeiroNome = nomeCompleto.split(" ")[0];
+                                    %>
+                                    <%= primeiroNome %>
+                                    <% if (usuario.isAdmin()) { %>
+                                        <span class="badge bg-danger ms-1">ADMIN</span>
+                                    <% } %>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li class="px-3 py-2">
+                                        <small class="text-muted">Logado como</small><br>
+                                        <strong><%= usuario.getNome() %></strong><br>
+                                        <small class="text-muted"><%= usuario.getEmail() %></small>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="LoginServlet">
+                                        <i class="fas fa-sign-out-alt"></i> Sair
+                                    </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
 
     <div class="admin-container">
         <!-- Alertas -->
