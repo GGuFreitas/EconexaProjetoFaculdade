@@ -47,7 +47,7 @@
 
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
-                            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
                             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>

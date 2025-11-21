@@ -12,23 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
-    <style>
-        .login-container {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1e8449 0%, #27ae60 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-    </style>
+    <<link rel="stylesheet" href="resources/css/login.css"/>
 </head>
 <body>
     <div class="login-container">
@@ -73,10 +57,10 @@
                 
                 <button type="submit" class="btn btn-success w-100 mb-3">Criar Conta</button>
                 
-                <div class="text-center">
-                    <a href="login.jsp">Já tem conta? Faça login</a>
-                </div>
+                    <a class="btn btn-outline-secondary" href="login.jsp">Já tem conta? Faça login</a>
             </form>
+            
+            <a class="btn btn-outline-success" href="index.jsp" style="margin-top: 12px">Voltar</a>
         </div>
     </div>
     

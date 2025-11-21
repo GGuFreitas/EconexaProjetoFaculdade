@@ -6,6 +6,46 @@ body {
   animation: fadeInPage 1s ease-out;
 }
 
+/* Dropdown do usuário */
+.user-info {
+    text-align: right;
+}
+
+.user-name {
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.user-badge {
+    line-height: 1;
+}
+
+.navbar-nav .dropdown-toggle::after {
+    margin-left: 0.5rem;
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    min-width: 200px;
+}
+
+.dropdown-item-text {
+    color: #6c757d;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
 @keyframes fadeInPage {
     from {
         opacity: 0;
