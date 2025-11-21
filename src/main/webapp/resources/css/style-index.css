@@ -3,6 +3,18 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  animation: fadeInPage 1s ease-out;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);  
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px); 
+    }
 }
 
 #index-body {
@@ -253,20 +265,6 @@ body {
     align-items: center;
     font-size: 1rem;
   }
-}
-@keyframes fadeInPage {
-    from {
-        opacity: 0;
-        tranform: translateY (-10px);
-    }
-    to {
-        opacity: 1;
-        tranform: translateY (0px);
-    }
-}
-
-body {
-    animation: fadeInPage 1s ease-out;
 }
 
 

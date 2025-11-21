@@ -5,6 +5,18 @@ body {
     background-color: white;
     height: 100vh;
     overflow: hidden;
+    animation: fadeInPage 1s ease-out;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);  
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px); 
+    }
 }
 
 .leaflet-left .leaflet-control {
@@ -249,6 +261,11 @@ body {
 
 
 @media (max-width: 768px) {
+    .leaflet-popup-content img,
+    .popup-image {
+        max-height: 120px !important;
+    }
+    
     #sidebar-main {
         transform: translateX(100%); 
         visibility: hidden;
@@ -400,14 +417,6 @@ body {
     font-weight: 700;
 }
 
-/* Mobile: imagens menores */
-@media (max-width: 768px) {
-    .leaflet-popup-content img,
-    .popup-image {
-        max-height: 120px !important;
-    }
-}
-
 /* ===== ESTILOS PARA OS NOVOS ÍCONES ===== */
 .leaflet-marker-icon {
     background: transparent !important;
@@ -455,25 +464,3 @@ body {
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
-@keyframes fadeInPage {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);  
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0px); 
-    }
-}
-
-body {
-    animation: fadeInPage 1s ease-out;
-}
-
-/* Mobile: imagens menores */
-@media (max-width: 768px) {
-    .leaflet-popup-content img,
-    .popup-image {
-        max-height: 120px !important;
-    }
-}

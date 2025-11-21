@@ -7,9 +7,18 @@ body {
     background: url("../img/background-index-blur.png") center/cover no-repeat;
     background-attachment: fixed;
     animation: fadeInPage 1s ease-out;
-
 }
 
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);  
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px); 
+    }
+}
 
 
 /* Lista de registros */
@@ -410,16 +419,5 @@ body {
     font-style: italic;
     display: block;
     margin-top: 5px;
-}
-
-@keyframes fadeInPage {
-    from {
-        opacity: 0;
-        transform: translateY (-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY (0px);
-    }
 }
 
