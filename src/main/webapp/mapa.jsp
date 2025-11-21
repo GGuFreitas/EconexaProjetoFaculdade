@@ -45,6 +45,7 @@
     <link href="resources/css/leaflet.css" rel="stylesheet" type="text/css"/>
     <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="resources/css/mapa.css" rel="stylesheet" type="text/css"/>
+    <link href="resources/css/style-index.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
     <header class="main-header">
@@ -300,7 +301,7 @@
                 .bindPopup(
                     '<div class="popup-content">' +
                     '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
-                    '<img src="MostrarImagemRegistroServlet?id=<%= registro.getId() %>" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
+                    '<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
                     '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
                     '<div class="popup-details">' +
                     '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
