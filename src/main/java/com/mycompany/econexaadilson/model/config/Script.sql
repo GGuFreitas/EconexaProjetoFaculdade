@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS blog_post (
 
 -- Admin com senha "admin123" - criptografada
 INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
-('Admin', 'admin@econexa.com', '$2a$10$8K1p/a0dRTlB0ZQ1Dbo2Au5R7Sz2bLItcu.8Fd.TuJXTFGYm6L1.K', 'ADMIN');
+('Admin', 'admin@econexa.com', '$2a$10$AjSLurEZm7CDNM9/98/4KOqwTbUTMTg8JIbcEPtbtqFIljkVfOHwK', 'ADMIN');
 
 
 
