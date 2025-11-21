@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
  * @author Enzo Reis
  */
 
-@WebFilter(filterName = "AuthFilter", urlPatterns = {"/admin.jsp", "/blog.jsp", "/admin/*", "/SalvarRegistroServlet", "/SalvarPostServlet"})
+@WebFilter(filterName = "AuthFilter", urlPatterns = {"/admin.jsp", "/admin/*", "/SalvarRegistroServlet", "/SalvarPostServlet"})
 public class AuthFilter implements Filter {
     
     @Override

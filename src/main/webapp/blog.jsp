@@ -1,7 +1,6 @@
 <%-- 
- *
- * @author Jhonny
- --%>
+    Author   : jhonny
+--%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.Blog"%>
@@ -11,9 +10,15 @@
 
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-    if (usuario == null) {
-        response.sendRedirect("login.jsp");
-        return;
+    
+    boolean estaLogado = (usuario != null);
+    String nomeExibicao = "Convidado";
+    String emailExibicao = "";
+    
+    if (estaLogado) {
+        String nomeCompleto = usuario.getNome();
+        nomeExibicao = nomeCompleto.split(" ")[0];
+        emailExibicao = usuario.getEmail();
     }
 
     BlogDAO postDAO = new BlogDAO();
@@ -41,7 +46,7 @@
                     </a>
 
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
 
@@ -51,34 +56,36 @@
                             <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
                             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
-                            <% if (usuario.isAdmin()) { %>
+                            
+                            <% if (estaLogado && usuario.isAdmin()) { %>
                                 <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>
                             <% } %>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <%
-                                    // Pegar apenas o primeiro nome
-                                    String nomeCompleto = usuario.getNome();
-                                    String primeiroNome = nomeCompleto.split(" ")[0];
-                                    %>
-                                    <%= primeiroNome %>
-                                    <% if (usuario.isAdmin()) { %>
+                                    <%= nomeExibicao %>
+                                    <% if (estaLogado && usuario.isAdmin()) { %>
                                         <span class="badge bg-danger ms-1">ADMIN</span>
                                     <% } %>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li class="px-3 py-2">
-                                        <small class="text-muted">Logado como</small><br>
-                                        <strong><%= usuario.getNome() %></strong><br>
-                                        <small class="text-muted"><%= usuario.getEmail() %></small>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="LoginServlet">
-                                        <i class="fas fa-sign-out-alt"></i> Sair
-                                    </a></li>
+                                    <% if (estaLogado) { %>
+                                        <li class="px-3 py-2">
+                                            <small class="text-muted">Logado como</small><br>
+                                            <strong><%= usuario.getNome() %></strong><br>
+                                            <small class="text-muted"><%= usuario.getEmail() %></small>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="LoginServlet">
+                                            <i class="fas fa-sign-out-alt"></i> Sair
+                                        </a></li>
+                                    <% } else { %>
+                                        <li><a class="dropdown-item" href="login.jsp">Entrar</a></li>
+                                        <li><a class="dropdown-item" href="cadastro.jsp">Cadastrar-se</a></li>
+                                    <% } %>
                                 </ul>
                             </li>
                         </ul>
@@ -89,6 +96,22 @@
         
         <div class="lista-registros">
             
+            <div class="perfil">
+                <div class="perfil-avatar">
+                    <% if (estaLogado) { %>
+                        <!-- Se tiver foto de perfil no futuro, coloque aqui. Por enquanto, inicial do nome -->
+                        <img src="https://placehold.co/50x50/27ae60/FFF?text=<%= nomeExibicao.substring(0,1) %>" alt="Avatar"/>
+                    <% } else { %>
+                        <img src="https://placehold.co/50x50/CCC/FFF?text=?" alt="Avatar Visitante"/>
+                    <% } %>
+                </div>
+                <div class="perfil-info">
+                    <strong><%= estaLogado ? usuario.getNome() : "Visitante" %></strong>
+                    <small><%= estaLogado ? usuario.getEmail() : "Faça login para interagir" %></small>
+                </div>
+            </div>
+
+            <!-- Alertas -->
             <% if (sucesso != null) { %>
                 <div class="alert alert-success"><%= sucesso %></div>
             <% } %>
@@ -96,9 +119,8 @@
                 <div class="alert alert-danger"><%= erro %></div>
             <% } %>
             
-            <% 
-                for(Blog post : posts) { 
-            %>
+            <!-- Lista de Posts -->
+            <% for(Blog post : posts) { %>
                 <div class="registro-item">
                     <section class="conteudo-grid" id="grid-conteudo">
                         <div class="grid">
@@ -109,13 +131,13 @@
                                          Por: <%= post.getNomeAutor() %>
                                      </span>
                                 </div>
-                                     
+                                
                                 <div class="descricao-registro">
                                      <span class="descricao-texto">
-                                        <%= post.getDescricao() %>
+                                         <%= post.getDescricao() %>
                                      </span>
                                 </div>
-                                     
+                                
                                 <div class="data-registro">
                                     <small class="registro-data">
                                         <p><%= new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(post.getDataPublicacao()) %></p>
@@ -124,18 +146,18 @@
                             </div>
                             
                             <img src="MostrarImagemServlet?id=<%= post.getId() %>" 
-                                 alt="<%= post.getTitulo() %>"/>
+                                 alt="<%= post.getTitulo() %>"
+                                 onerror="this.src='https://placehold.co/400x400/EEE/333?text=Sem+Foto'"/>
                         </div>
                     </section>
                 </div>
-            <% 
-                } // Fim do loop 
-            %>
+            <% } %>
         </div>
         
+        <!-- Sidebar -->
         <div class="sidebar" id="sidebar-main">
             <div class="form-novo-registro">
-                <h5>Postar</h5>
+                <h5>Postar no Blog</h5>
                 
                 <form method="POST" action="SalvarPostServlet" id="formRegistro" enctype="multipart/form-data">
                     
@@ -154,9 +176,16 @@
                     </div>
                     
                     <div class="d-grid gap-2" style="margin-top: 20px;">
-                        <button type="submit" class="btn btn-success">
-                            Publicar Post
-                        </button>
+                        <%-- Lógica de Proteção: Só mostra o botão se estiver logado --%>
+                        <% if (estaLogado) { %>
+                            <button type="submit" class="btn btn-success">
+                                Publicar Post
+                            </button>
+                        <% } else { %>
+                            <a href="login.jsp" class="btn btn-secondary">
+                                Faça login para publicar
+                            </a>
+                        <% } %>
                     </div>
                 </form>
             </div>
