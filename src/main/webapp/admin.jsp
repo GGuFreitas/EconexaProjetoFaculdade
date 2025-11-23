@@ -1,33 +1,37 @@
 <%-- 
     Document   : admin
-    Created on : 20 de out. de 2025, 19:53:09
-    Author     : gufre
+    Author     : gufre, jhonny
 --%>
 
 <%@page import="com.mycompany.econexaadilson.model.DAO.RegistroDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.TipoRegistroDAO"%>
+<%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
 <%@page import="com.mycompany.econexaadilson.model.Registro"%>
 <%@page import="com.mycompany.econexaadilson.model.TipoRegistro"%>
+<%@page import="com.mycompany.econexaadilson.model.Blog"%>
 <%@page import="com.mycompany.econexaadilson.model.Usuario"%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Date" %>
+<%@page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page import="java.util.List" %>
+<%@page import="java.util.Date" %>
+
 <%
-    // Verificar se usuário está logado
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-    if (usuario == null) {
+    if (usuario == null || !usuario.isAdmin()) {
         response.sendRedirect("login.jsp");
         return;
     }
 %>
+
 <%
-       
+    request.setCharacterEncoding("UTF-8");
     
-    // Processamento de ações
+    RegistroDAO registroDAO = new RegistroDAO();
+    TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
+    BlogDAO blogDAO = new BlogDAO();
+
     String acao = request.getParameter("acao");
     String tipoAcao = request.getParameter("tipoAcao");
     
-    // Processar ações de Registro
     if ("registro".equals(tipoAcao)) {
         if ("inserir".equals(acao)) {
             try {
@@ -40,15 +44,13 @@
                 registro.setStatus(request.getParameter("status"));
                 
                 Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
-                TipoRegistro tipoRegistro = new TipoRegistroDAO().buscarPorId(tipoRegistroId);
+                TipoRegistro tipoRegistro = tipoRegistroDAO.buscarPorId(tipoRegistroId);
                 registro.setTipoRegistro(tipoRegistro);
                 
-                new RegistroDAO().inserir(registro);
-                response.sendRedirect("admin.jsp?sucesso=Registro criado com sucesso!");
-                return;
+                registroDAO.inserir(registro);
+                response.sendRedirect("admin.jsp?sucesso=Registro criado com sucesso!"); return;
             } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao criar registro: " + e.getMessage());
-                return;
+                response.sendRedirect("admin.jsp?erro=Erro ao criar registro: " + e.getMessage()); return;
             }
         } else if ("atualizar".equals(acao)) {
             try {
@@ -62,92 +64,82 @@
                 registro.setStatus(request.getParameter("status"));
                 
                 Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
-                TipoRegistro tipoRegistro = new TipoRegistroDAO().buscarPorId(tipoRegistroId);
+                TipoRegistro tipoRegistro = tipoRegistroDAO.buscarPorId(tipoRegistroId);
                 registro.setTipoRegistro(tipoRegistro);
                 
-                new RegistroDAO().atualizar(registro);
-                response.sendRedirect("admin.jsp?sucesso=Registro atualizado com sucesso!");
-                return;
+                registroDAO.atualizar(registro);
+                response.sendRedirect("admin.jsp?sucesso=Registro atualizado com sucesso!"); return;
             } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao atualizar registro: " + e.getMessage());
-                return;
+                response.sendRedirect("admin.jsp?erro=Erro ao atualizar registro: " + e.getMessage()); return;
             }
         } else if ("excluir".equals(acao)) {
             try {
                 Long id = Long.parseLong(request.getParameter("id"));
-                new RegistroDAO().excluir(id);
-                response.sendRedirect("admin.jsp?sucesso=Registro excluído com sucesso!");
-                return;
+                registroDAO.excluir(id);
+                response.sendRedirect("admin.jsp?sucesso=Registro excluído com sucesso!"); return;
             } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao excluir registro: " + e.getMessage());
-                return;
+                response.sendRedirect("admin.jsp?erro=Erro ao excluir registro: " + e.getMessage()); return;
             }
         }
     }
     
-    // Processar ações de Tipo de Registro
     if ("tipo".equals(tipoAcao)) {
         if ("inserir".equals(acao)) {
-            try {
-                TipoRegistro tipo = new TipoRegistro();
-                tipo.setNome(request.getParameter("nome"));
-                tipo.setCategoria(request.getParameter("categoria"));
-                tipo.setDescricao(request.getParameter("descricao"));
-                tipo.setIcone(request.getParameter("icone"));
-                
-                new TipoRegistroDAO().inserir(tipo);
-                response.sendRedirect("admin.jsp?sucesso=Tipo de registro criado com sucesso!");
-                return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao criar tipo de registro: " + e.getMessage());
-                return;
-            }
+             try {
+                TipoRegistro t = new TipoRegistro();
+                t.setNome(request.getParameter("nome"));
+                t.setCategoria(request.getParameter("categoria"));
+                t.setDescricao(request.getParameter("descricao"));
+                t.setIcone(request.getParameter("icone"));
+                tipoRegistroDAO.inserir(t);
+                response.sendRedirect("admin.jsp?sucesso=Categoria criada com sucesso!"); return;
+             } catch(Exception e) { response.sendRedirect("admin.jsp?erro=" + e.getMessage()); return; }
         } else if ("atualizar".equals(acao)) {
-            try {
-                TipoRegistro tipo = new TipoRegistro();
-                tipo.setId(Long.parseLong(request.getParameter("id")));
-                tipo.setNome(request.getParameter("nome"));
-                tipo.setCategoria(request.getParameter("categoria"));
-                tipo.setDescricao(request.getParameter("descricao"));
-                tipo.setIcone(request.getParameter("icone"));
-                
-                new TipoRegistroDAO().atualizar(tipo);
-                response.sendRedirect("admin.jsp?sucesso=Tipo de registro atualizado com sucesso!");
-                return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao atualizar tipo de registro: " + e.getMessage());
-                return;
-            }
+             try {
+                TipoRegistro t = new TipoRegistro();
+                t.setId(Long.parseLong(request.getParameter("id")));
+                t.setNome(request.getParameter("nome"));
+                t.setCategoria(request.getParameter("categoria"));
+                t.setDescricao(request.getParameter("descricao"));
+                t.setIcone(request.getParameter("icone"));
+                tipoRegistroDAO.atualizar(t);
+                response.sendRedirect("admin.jsp?sucesso=Categoria atualizada com sucesso!"); return;
+             } catch(Exception e) { response.sendRedirect("admin.jsp?erro=" + e.getMessage()); return; }
         } else if ("excluir".equals(acao)) {
+             try {
+                tipoRegistroDAO.excluir(Long.parseLong(request.getParameter("id")));
+                response.sendRedirect("admin.jsp?sucesso=Categoria excluída com sucesso!"); return;
+             } catch(Exception e) { response.sendRedirect("admin.jsp?erro=" + e.getMessage()); return; }
+        }
+    }
+    
+    if ("blog".equals(tipoAcao)) {
+        if ("excluir".equals(acao)) {
             try {
-                Long id = Long.parseLong(request.getParameter("id"));
-                new TipoRegistroDAO().excluir(id);
-                response.sendRedirect("admin.jsp?sucesso=Tipo de registro excluído com sucesso!");
-                return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?erro=Erro ao excluir tipo de registro: " + e.getMessage());
-                return;
+                blogDAO.excluir(Long.parseLong(request.getParameter("id")));
+                response.sendRedirect("admin.jsp?sucesso=Post excluído com sucesso!"); return;
+            } catch(Exception e) {
+                response.sendRedirect("admin.jsp?erro=" + e.getMessage()); return;
             }
         }
     }
 
-    // Carregar dados
-    RegistroDAO registroDAO = new RegistroDAO();
-    TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
     List<Registro> registros = registroDAO.listarTodos();
     List<TipoRegistro> tiposRegistro = tipoRegistroDAO.listarTodos();
-    
-    // Parâmetros para edição
+    List<Blog> posts = blogDAO.listarTodosAdmin(); 
     String editId = request.getParameter("editId");
     String editType = request.getParameter("editType");
     Registro registroEdit = null;
     TipoRegistro tipoEdit = null;
+    Blog blogEdit = null;
     
     if (editId != null && !editId.isEmpty()) {
         if ("registro".equals(editType)) {
             registroEdit = registroDAO.buscarPorId(Long.parseLong(editId));
         } else if ("tipo".equals(editType)) {
             tipoEdit = tipoRegistroDAO.buscarPorId(Long.parseLong(editId));
+        } else if ("blog".equals(editType)) {
+            blogEdit = blogDAO.buscarPorId(Long.parseLong(editId));
         }
     }
 %>
@@ -160,7 +152,7 @@
     <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="resources/css/admin.css" rel="stylesheet" type="text/css"/>
 </head>
-<body  class="admin-body">
+<body class="admin-body">
     <header class="main-header">
             <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
                 <div class="container-fluid">
@@ -186,7 +178,6 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <%
-                                    // Pegar apenas o primeiro nome
                                     String nomeCompleto = usuario.getNome();
                                     String primeiroNome = nomeCompleto.split(" ")[0];
                                     %>
@@ -213,7 +204,7 @@
                     </div>
                 </div>
             </nav>
-        </header>
+    </header>
 
     <div class="admin-container">
         <!-- Alertas -->
@@ -234,7 +225,6 @@
             <h1>Gerenciamento ECONEXA</h1>
         </div>
 
-        <!-- Formulários de Cadastro -->
         <div class="row mb-4">
             <!-- Formulário de Registro -->
             <div class="col-md-6">
@@ -369,9 +359,105 @@
             </div>
         </div>
 
-        <!-- Listas de Dados -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="form-section">
+                    <h4><%= blogEdit != null ? "Editar Post do Blog" : "Novo Post no Blog" %></h4>
+                    
+                    <!-- ACTION APONTA PARA O SERVLET PARA SUPORTAR UPLOAD DE FOTO -->
+                    <form method="POST" action="SalvarPostServlet" enctype="multipart/form-data">
+                        <input type="hidden" name="origem" value="admin"> <!-- Importante para voltar pra cá -->
+                        <% if (blogEdit != null) { %>
+                            <input type="hidden" name="id" value="<%= blogEdit.getId() %>">
+                        <% } %>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Título do Post</label>
+                                    <input type="text" class="form-control" name="titulo" 
+                                           value="<%= blogEdit != null ? blogEdit.getTitulo() : "" %>" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" name="status">
+                                        <option value="PUBLICADO" <%= blogEdit != null && "PUBLICADO".equals(blogEdit.getStatusPublicacao()) ? "selected" : "" %>>Publicado</option>
+                                        <option value="RASCUNHO" <%= blogEdit != null && "RASCUNHO".equals(blogEdit.getStatusPublicacao()) ? "selected" : "" %>>Rascunho</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Conteúdo</label>
+                                    <textarea class="form-control" name="descricao" rows="3" placeholder="Escreva o conteúdo do post..."><%= blogEdit != null ? blogEdit.getDescricao() : "" %></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Foto de Capa</label>
+                                    <input type="file" class="form-control" name="foto_capa" accept="image/*">
+                                    <% if (blogEdit != null) { %>
+                                         <small class="text-muted">Deixe vazio para manter a imagem atual.</small>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <%= blogEdit != null ? "Salvar Alterações no Post" : "Publicar Post" %>
+                            </button>
+                            <% if (blogEdit != null) { %>
+                                <a href="admin.jsp" class="btn btn-secondary">Cancelar Edição</a>
+                            <% } %>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <h5>Lista de Posts (<%= posts.size() %>)</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Título</th>
+                                    <th>Status</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for(Blog p : posts) { %>
+                                <tr>
+                                    <td><%= p.getId() %></td>
+                                    <td><%= p.getTitulo() %></td>
+                                    <td>
+                                        <span class="badge <%= "PUBLICADO".equals(p.getStatusPublicacao()) ? "bg-success" : "bg-warning" %>">
+                                            <%= p.getStatusPublicacao() %>
+                                        </span>
+                                    </td>
+                                    <td><%= new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(p.getDataPublicacao()) %></td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="admin.jsp?editId=<%= p.getId() %>&editType=blog" class="btn btn-outline-primary btn-acao">Editar</a>
+                                            <a href="admin.jsp?tipoAcao=blog&acao=excluir&id=<%= p.getId() %>" 
+                                               class="btn btn-outline-danger btn-acao"
+                                               onclick="return confirm('Excluir este post?')">Excluir</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
-            <!-- Lista de Registros -->
             <div class="col-md-12 mb-4">
                 <div class="form-section">
                     <h4>Registros Cadastrados (<%= registros.size() %>)</h4>
@@ -404,7 +490,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-<%= registro.getStatus().equals("PENDENTE") ? "warning" : 
-                                                               registro.getStatus().equals("RESOLVIDO") ? "success" : "info" %>">
+                                                                 registro.getStatus().equals("RESOLVIDO") ? "success" : "info" %>">
                                             <%= registro.getStatus() %>
                                         </span>
                                     </td>

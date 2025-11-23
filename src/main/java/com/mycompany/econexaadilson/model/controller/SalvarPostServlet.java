@@ -1,4 +1,5 @@
 package com.mycompany.econexaadilson.model.controller;
+
 import com.mycompany.econexaadilson.model.Blog;
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
 import com.mycompany.econexaadilson.model.Usuario;
@@ -27,6 +28,7 @@ public class SalvarPostServlet extends HttpServlet {
         
         String message = null;
         boolean sucesso = false;
+        String origem = request.getParameter("origem");
         
         try {
             HttpSession session = request.getSession();
@@ -40,10 +42,17 @@ public class SalvarPostServlet extends HttpServlet {
 
             Blog post = new Blog();
             
+            String idParam = request.getParameter("id");
+            if (idParam != null && !idParam.isEmpty()) {
+                post.setId(Long.parseLong(idParam));
+            }
+            
             post.setTitulo(request.getParameter("titulo"));
             post.setDescricao(request.getParameter("descricao"));
+            
+            String status = request.getParameter("status");
+            post.setStatusPublicacao(status != null ? status : "PUBLICADO");
 
-            // --- Upload de Imagem ---
             InputStream inputStream = null;
             Part filePart = request.getPart("foto_capa");
             if (filePart != null && filePart.getSize() > 0) {
@@ -51,19 +60,20 @@ public class SalvarPostServlet extends HttpServlet {
                 post.setFotoCapaStream(inputStream);
             }
 
-            // --- Vincular ao Usuário ---
             post.setUsuarioId(usuarioLogado.getId());
-
-            post.setStatusPublicacao("PUBLICADO");
             post.setDataPublicacao(new Date());
 
-            sucesso = new BlogDAO().inserir(post);
-
-            if (sucesso) {
-                message = "Post criado com sucesso!";
+            BlogDAO dao = new BlogDAO();
+            
+            if (post.getId() != null && post.getId() > 0) {
+                sucesso = dao.atualizar(post);
+                message = "Post atualizado!";
             } else {
-                message = "Erro ao criar post.";
+                sucesso = dao.inserir(post);
+                message = "Post criado!";
             }
+
+            if (!sucesso) message = "Erro ao salvar post.";
 
         } catch (Exception e) {
             message = "ERRO: " + e.getMessage();
@@ -71,10 +81,16 @@ public class SalvarPostServlet extends HttpServlet {
         } finally {
             if (!response.isCommitted()) {
                 String encodedMessage = URLEncoder.encode(message, "UTF-8");
+                String redirectPage = "blog.jsp";
+                
+                if ("admin".equals(origem)) {
+                    redirectPage = "admin.jsp";
+                }
+                
                 if (sucesso) {
-                    response.sendRedirect("blog.jsp?sucesso=" + encodedMessage);
+                    response.sendRedirect(redirectPage + "?sucesso=" + encodedMessage);
                 } else {
-                    response.sendRedirect("blog.jsp?erro=" + encodedMessage);
+                    response.sendRedirect(redirectPage + "?erro=" + encodedMessage);
                 }
             }
         }

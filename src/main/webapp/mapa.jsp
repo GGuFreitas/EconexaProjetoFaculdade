@@ -27,6 +27,7 @@
 <%
     
     String acao = request.getParameter("acao");
+    
     RegistroDAO registroDAO = new RegistroDAO();
     TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
     List<Registro> registros = registroDAO.listarTodos();
@@ -62,7 +63,7 @@
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
                     <ul class="navbar-nav nav-pills mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li> <!-- Corrigido para .jsp -->
+                        <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Mapa</a></li>
                         <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
@@ -133,7 +134,6 @@
             
             <div class="form-novo-registro">
                   <h5>Novo Registro</h5>
-                  <!-- Importante: Action aponta para o Servlet -->
                   <form method="POST" action="SalvarRegistroServlet" id="formRegistro" enctype="multipart/form-data">
                       <input type="hidden" name="latitude" id="inputLatitude">
                       <input type="hidden" name="longitude" id="inputLongitude">
@@ -163,6 +163,15 @@
                             <input type="file" class="form-control" name="foto" id="inputFoto" accept="image/*" capture="environment">
                             <small class="text-muted">Você pode tirar uma foto ou escolher da galeria</small>
                       </div>
+                      
+                      <% if (estaLogado) { %>
+                          <div class="form-check mb-3">
+                              <input class="form-check-input" type="checkbox" name="criarPost" id="checkCriarPost">
+                              <label class="form-check-label" for="checkCriarPost">
+                                  Publicar também no Blog
+                              </label>
+                          </div>
+                      <% } %>
                         
                       <div class="mb-2">
                           <small class="text-muted">
@@ -175,7 +184,6 @@
                               Usar Minha Localização
                           </button>
                           
-                          <%-- Só permite salvar se estiver logado (Opcional, mas recomendado) --%>
                           <% if (estaLogado) { %>
                               <button type="submit" class="btn btn-success">Salvar Registro</button>
                           <% } else { %>
@@ -219,18 +227,14 @@
         </div>
         
         <!-- Botão Flutuante -->
-        <% if (estaLogado) { %>
-                              <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
+        <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
             Novo Registro
         </button>
-                          <% } %>
-        
     </div>
 
     <script src="resources/js/leaflet.js" type="text/javascript"></script>
     <script src="resources/js/bootstrap.js"></script>
     <script>
-        // ... (O script do mapa permanece o mesmo) ...
         var southWest = L.latLng(-23.65, -46.35);
         var northEast = L.latLng(-23.40, -46.00);
         var bounds = L.latLngBounds(southWest, northEast);
@@ -296,19 +300,23 @@
             var categoria = '<%= registro.getTipoRegistro().getCategoria() %>';
             var icone = criarIconeRegistro(categoria);
 
+            var popupContent = 
+                '<div class="popup-content">' +
+                '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
+                '<img src="MostrarImagemRegistroServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
+                // ----------------------------------------------
+                '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
+                '<div class="popup-details">' +
+                '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
+                '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
+                '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
+                '</div>' +
+                '</div>';
+
             var marcador = L.marker([lat, lng], {icon: icone})
                 .addTo(map)
-                .bindPopup(
-                    '<div class="popup-content">' +
-                    '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
-                    '<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
-                    '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
-                    '<div class="popup-details">' +
-                    '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
-                    '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
-                    '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
-                    '</div></div>'
-                );
+                .bindPopup(popupContent);
+
             marcadoresRegistros.push(marcador);
             marcadoresPorCoordenadas[lat.toFixed(6) + ',' + lng.toFixed(6)] = marcador;
         <% } %>

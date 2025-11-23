@@ -6,7 +6,6 @@ body {
   animation: fadeInPage 1s ease-out;
 }
 
-/* Dropdown do usuário */
 .user-info {
     text-align: right;
 }

@@ -113,14 +113,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     position: relative;
 }
 
-/* Container principal do admin */
 .admin-container {
     max-width: 1400px;
     margin: 80px auto 40px;
     padding: 0 20px;
 }
 
-/* Títulos */
 .admin-container h1 {
     color: white;
     text-align: center;
@@ -129,7 +127,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-/* Seções de formulário - estilo glassmorphism */
 .form-section {
     background: linear-gradient(
         180deg,
@@ -159,7 +156,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     padding-bottom: 10px;
 }
 
-/* Formulários */
 .form-label {
     font-weight: 600;
     color: #34495e;
@@ -180,7 +176,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     background: white;
 }
 
-/* Tabelas - estilo glassmorphism */
 .tabela-registros {
     background: linear-gradient(
         180deg,
@@ -217,7 +212,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     background-color: rgba(52, 152, 219, 0.05);
 }
 
-/* Badges personalizadas */
 .badge-positivo {
     background: linear-gradient(135deg, #27ae60, #2ecc71);
     color: white;
@@ -236,7 +230,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     box-shadow: 0 2px 4px rgba(192, 57, 43, 0.3);
 }
 
-/* Botões de ação */
 .btn-acao {
     padding: 0.4rem 0.8rem;
     margin: 0 2px;
@@ -270,7 +263,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
-/* Botões principais */
 .btn-primary {
     background: linear-gradient(135deg, #3498db, #2980b9);
     border: none;
@@ -336,7 +328,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     color: white;
 }
 
-/* Status badges */
 .badge.bg-warning {
     background: linear-gradient(135deg, #f39c12, #e67e22) !important;
     color: white;
@@ -352,7 +343,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     color: white;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .admin-container {
         margin: 70px auto 20px;
@@ -442,7 +432,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     }
 }
 
-/* Animações */
 @keyframes fadeInPage {
     from {
         opacity: 0;
@@ -454,24 +443,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     }
 }
 
-/* Estilos para grupos de botões */
 .btn-group {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Melhorias para inputs numéricos */
 input[type="number"] {
     text-align: center;
 }
 
-/* Placeholders com cor suave */
 ::placeholder {
     color: rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Scrollbar personalizada para tabelas */
 .table-responsive::-webkit-scrollbar {
     height: 8px;
 }

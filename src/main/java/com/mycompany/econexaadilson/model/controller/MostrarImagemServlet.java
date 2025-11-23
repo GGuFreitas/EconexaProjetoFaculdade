@@ -1,13 +1,6 @@
-/**
- *
- * @author Jhonny
- */
-
 package com.mycompany.econexaadilson.model.controller;
 
-
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
-import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.ServletException;
@@ -23,31 +16,25 @@ public class MostrarImagemServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            Long id = Long.parseLong(request.getParameter("id"));
-            String tipo = request.getParameter("tipo"); // "blog" ou "registro"
-            
-            byte[] imgBytes = null;
-            
-            if ("registro".equals(tipo)) {
-                // Busca imagem do registro
-                RegistroDAO registroDao = new RegistroDAO();
-                imgBytes = registroDao.getImagemById(id);
-            } else {
-                // Default para blog (mantém compatibilidade)
-                BlogDAO blogDao = new BlogDAO();
-                imgBytes = blogDao.getImagemById(id);
+            String idParam = request.getParameter("id");
+            if (idParam == null || idParam.isEmpty()) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
             }
+            
+            Long postId = Long.parseLong(idParam);
+            
+            BlogDAO dao = new BlogDAO();
+            byte[] imgBytes = dao.getImagemById(postId);
             
             if (imgBytes != null && imgBytes.length > 0) {
                 response.setContentType("image/jpeg"); 
-                
                 OutputStream os = response.getOutputStream();
                 os.write(imgBytes);
                 os.flush();
                 os.close();
             } else {
-                // Envia uma imagem placeholder
-                response.sendRedirect("resources/img/placeholder.jpg");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
             
         } catch (NumberFormatException e) {

@@ -99,7 +99,9 @@
             <div class="perfil">
                 <div class="perfil-avatar">
                     <% if (estaLogado) { %>
-                        <!-- Se tiver foto de perfil no futuro, coloque aqui. Por enquanto, inicial do nome -->
+                    
+                        <!-- Se tiver foto de perfil, coloque aqui. Por enquanto, inicial do nome -->
+                        
                         <img src="https://placehold.co/50x50/27ae60/FFF?text=<%= nomeExibicao.substring(0,1) %>" alt="Avatar"/>
                     <% } else { %>
                         <img src="https://placehold.co/50x50/CCC/FFF?text=?" alt="Avatar Visitante"/>
@@ -112,12 +114,18 @@
             </div>
 
             <!-- Alertas -->
-            <% if (sucesso != null) { %>
-                <div class="alert alert-success"><%= sucesso %></div>
-            <% } %>
-            <% if (erro != null) { %>
-                <div class="alert alert-danger"><%= erro %></div>
-            <% } %>
+    <% if (sucesso != null) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= sucesso %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    <% if (erro != null) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= erro %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
             
             <!-- Lista de Posts -->
             <% for(Blog post : posts) { %>
@@ -147,7 +155,8 @@
                             
                             <img src="MostrarImagemServlet?id=<%= post.getId() %>" 
                                  alt="<%= post.getTitulo() %>"
-                                 onerror="this.src='https://placehold.co/400x400/EEE/333?text=Sem+Foto'"/>
+                                 class="post-imagem"
+                                 onerror="this.style.display='none'; this.parentElement.classList.add('no-grid-image');"/>
                         </div>
                     </section>
                 </div>
@@ -176,7 +185,7 @@
                     </div>
                     
                     <div class="d-grid gap-2" style="margin-top: 20px;">
-                        <%-- Lógica de Proteção: Só mostra o botão se estiver logado --%>
+                        
                         <% if (estaLogado) { %>
                             <button type="submit" class="btn btn-success">
                                 Publicar Post
