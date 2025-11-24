@@ -303,8 +303,7 @@
             var popupContent = 
                 '<div class="popup-content">' +
                 '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
-                '<img src="MostrarImagemRegistroServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
-                // ----------------------------------------------
+'<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +                // ----------------------------------------------
                 '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
                 '<div class="popup-details">' +
                 '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +

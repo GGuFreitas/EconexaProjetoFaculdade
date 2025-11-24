@@ -1,14 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package com.mycompany.econexaadilson.model.controller;
 
 import com.mycompany.econexaadilson.model.Registro;
 import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
 import com.mycompany.econexaadilson.model.TipoRegistro;
-
-
 import com.mycompany.econexaadilson.model.Blog;
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
 import com.mycompany.econexaadilson.model.Usuario;
@@ -56,13 +50,15 @@ public class SalvarRegistroServlet extends HttpServlet {
             Part filePart = request.getPart("foto"); 
             
             if (filePart != null && filePart.getSize() > 0) {
+                imagemBytes = new byte[(int) filePart.getSize()];
                 try (InputStream is = filePart.getInputStream()) {
-                    
-                    imagemBytes = new byte[is.available()];
-                    is.read(imagemBytes);
+                    int bytesRead = 0;
+                    while (bytesRead < imagemBytes.length) {
+                        int result = is.read(imagemBytes, bytesRead, imagemBytes.length - bytesRead);
+                        if (result == -1) break;
+                        bytesRead += result;
+                    }
                 }
-                
-                
                 registro.setFotoStream(new ByteArrayInputStream(imagemBytes));
             }
 
@@ -78,7 +74,6 @@ public class SalvarRegistroServlet extends HttpServlet {
                 String criarPost = request.getParameter("criarPost");
                 
                 if (criarPost != null && criarPost.equals("on")) {
-                    
                     HttpSession session = request.getSession();
                     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
                     
@@ -96,7 +91,7 @@ public class SalvarRegistroServlet extends HttpServlet {
                         }
                         
                         new BlogDAO().inserir(post);
-                        message += " Postado no Blog!";
+                        message += " E postado no Blog!";
                     }
                 }
                 

@@ -1,6 +1,7 @@
 package com.mycompany.econexaadilson.model.controller;
 
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
+import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.ServletException;
@@ -17,15 +18,23 @@ public class MostrarImagemServlet extends HttpServlet {
         
         try {
             String idParam = request.getParameter("id");
+            String tipo = request.getParameter("tipo");
+            
             if (idParam == null || idParam.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
             
-            Long postId = Long.parseLong(idParam);
+            Long id = Long.parseLong(idParam);
+            byte[] imgBytes = null;
             
-            BlogDAO dao = new BlogDAO();
-            byte[] imgBytes = dao.getImagemById(postId);
+            if ("registro".equals(tipo)) {
+                RegistroDAO registroDao = new RegistroDAO();
+                imgBytes = registroDao.getImagemById(id);
+            } else {
+                BlogDAO blogDao = new BlogDAO();
+                imgBytes = blogDao.getImagemById(id);
+            }
             
             if (imgBytes != null && imgBytes.length > 0) {
                 response.setContentType("image/jpeg"); 
@@ -40,6 +49,7 @@ public class MostrarImagemServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID inválido.");
         } catch (Exception e) {
+            e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erro ao carregar imagem.");
         }
     }
