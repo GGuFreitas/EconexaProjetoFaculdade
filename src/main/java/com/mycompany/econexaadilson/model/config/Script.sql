@@ -62,6 +62,19 @@ CREATE TABLE IF NOT EXISTS blog_post (
  INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
 ('Admin', 'admin@econexa.com', '$2a$10$AjSLurEZm7CDNM9/98/4KOqwTbUTMTg8JIbcEPtbtqFIljkVfOHwK', 'ADMIN');
 
+
+CREATE TABLE IF NOT EXISTS revista_post (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    descricao TEXT NOT NULL,
+    foto_capa LONGBLOB NULL, 
+    data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario_id BIGINT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    autor VARCHAR(200) NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id));
+
 INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
 ('Problema na Via', 'NEGATIVO', 'Buracos, asfalto ruim, calçadas quebradas, obstruções', 'fa-road'),
 ('Iluminação', 'NEGATIVO', 'Lâmpadas queimadas, postes quebrados, áreas escuras', 'fa-lightbulb'),
