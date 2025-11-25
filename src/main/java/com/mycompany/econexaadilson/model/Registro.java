@@ -22,13 +22,14 @@ public class Registro {
     private TipoRegistro tipoRegistro;
     private InputStream fotoStream; 
     private byte[] fotoBytes;
+    private Usuario usuario;
 
     // Construtores, getters e setters
     public Registro() {}
     
     public Registro(Long id, String titulo, String descricao, Date data, 
-                   Double latitude, Double longitude, String foto, 
-                   String status, TipoRegistro tipoRegistro) {
+                   Double latitude, Double longitude, String status, 
+                   TipoRegistro tipoRegistro, Usuario usuario) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
@@ -37,6 +38,7 @@ public class Registro {
         this.longitude = longitude;
         this.status = status;
         this.tipoRegistro = tipoRegistro;
+        this.usuario = usuario;
     }
     
     // Getters e Setters
@@ -69,4 +71,7 @@ public class Registro {
     
     public byte[] getFotoBytes() { return fotoBytes; }
     public void setFotoBytes(byte[] fotoBytes) { this.fotoBytes = fotoBytes; }
+    
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 }

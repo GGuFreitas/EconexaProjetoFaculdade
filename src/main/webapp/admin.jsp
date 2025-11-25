@@ -33,55 +33,62 @@
     String tipoAcao = request.getParameter("tipoAcao");
     
     if ("registro".equals(tipoAcao)) {
-        if ("inserir".equals(acao)) {
-            try {
-                Registro registro = new Registro();
-                registro.setTitulo(request.getParameter("titulo"));
-                registro.setDescricao(request.getParameter("descricao"));
-                registro.setData(new Date());
-                registro.setLatitude(Double.parseDouble(request.getParameter("latitude")));
-                registro.setLongitude(Double.parseDouble(request.getParameter("longitude")));
-                registro.setStatus(request.getParameter("status"));
-                
-                Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
-                TipoRegistro tipoRegistro = tipoRegistroDAO.buscarPorId(tipoRegistroId);
-                registro.setTipoRegistro(tipoRegistro);
-                
-                registroDAO.inserir(registro);
-                response.sendRedirect("admin.jsp?tab=registros&sucesso=Registro criado!"); return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?tab=registros&erro=" + e.getMessage()); return;
-            }
-        } else if ("atualizar".equals(acao)) {
-            try {
-                Registro registro = new Registro();
+    if ("inserir".equals(acao) || "atualizar".equals(acao)) {
+        try {
+            Registro registro = new Registro();
+            
+            if ("atualizar".equals(acao)) {
                 registro.setId(Long.parseLong(request.getParameter("id")));
-                registro.setTitulo(request.getParameter("titulo"));
-                registro.setDescricao(request.getParameter("descricao"));
-                registro.setData(new Date());
-                registro.setLatitude(Double.parseDouble(request.getParameter("latitude")));
-                registro.setLongitude(Double.parseDouble(request.getParameter("longitude")));
-                registro.setStatus(request.getParameter("status"));
-                
-                Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
-                TipoRegistro tipoRegistro = tipoRegistroDAO.buscarPorId(tipoRegistroId);
-                registro.setTipoRegistro(tipoRegistro);
-                
-                registroDAO.atualizar(registro);
-                response.sendRedirect("admin.jsp?tab=registros&sucesso=Registro atualizado!"); return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?tab=registros&erro=" + e.getMessage()); return;
             }
-        } else if ("excluir".equals(acao)) {
-            try {
-                Long id = Long.parseLong(request.getParameter("id"));
-                registroDAO.excluir(id);
-                response.sendRedirect("admin.jsp?tab=registros&sucesso=Registro apagado!"); return;
-            } catch (Exception e) {
-                response.sendRedirect("admin.jsp?tab=registros&erro=" + e.getMessage()); return;
+            
+            registro.setTitulo(request.getParameter("titulo"));
+            registro.setDescricao(request.getParameter("descricao"));
+            registro.setData(new Date());
+            registro.setLatitude(Double.parseDouble(request.getParameter("latitude")));
+            registro.setLongitude(Double.parseDouble(request.getParameter("longitude")));
+            registro.setStatus(request.getParameter("status"));
+            
+            Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
+            TipoRegistro tipoRegistro = tipoRegistroDAO.buscarPorId(tipoRegistroId);
+            registro.setTipoRegistro(tipoRegistro);
+            
+            //  Associar usuário admin
+            registro.setUsuario(usuario);
+            
+            //  Processar foto
+            Part filePart = request.getPart("foto");
+            if (filePart != null && filePart.getSize() > 0) {
+                registro.setFotoStream(filePart.getInputStream());
             }
+            
+            boolean sucessoOperacao;
+            if ("inserir".equals(acao)) {
+                sucessoOperacao = registroDAO.inserir(registro) != null;
+            } else {
+                sucessoOperacao = registroDAO.atualizar(registro);
+            }
+            
+            if (sucessoOperacao) {
+                response.sendRedirect("admin.jsp?tab=registros&sucesso=Registro " + ("inserir".equals(acao) ? "criado" : "atualizado") + "!"); 
+                return;
+            } else {
+                response.sendRedirect("admin.jsp?tab=registros&erro=Erro ao " + ("inserir".equals(acao) ? "criar" : "atualizar") + " registro"); 
+                return;
+            }
+        } catch (Exception e) {
+            response.sendRedirect("admin.jsp?tab=registros&erro=" + e.getMessage()); 
+            return;
+        }
+    } else if ("excluir".equals(acao)) {
+        try {
+            Long id = Long.parseLong(request.getParameter("id"));
+            registroDAO.excluir(id);
+            response.sendRedirect("admin.jsp?tab=registros&sucesso=Registro apagado!"); return;
+        } catch (Exception e) {
+            response.sendRedirect("admin.jsp?tab=registros&erro=" + e.getMessage()); return;
         }
     }
+}
     
     if ("tipo".equals(tipoAcao)) {
         if ("inserir".equals(acao)) {
@@ -243,14 +250,15 @@
 
                 <div class="form-section">
                     <h4><%= registroEdit != null ? "Editar Registro" : "Novo Registro" %></h4>
-                    <form method="POST" action="admin.jsp">
-                        <input type="hidden" name="tipoAcao" value="registro">
-                        <input type="hidden" name="acao" value="<%= registroEdit != null ? "atualizar" : "inserir" %>">
-                        <input type="hidden" name="tab" value="registros"> <!-- Mantém na aba -->
+                    <form method="POST" action="SalvarRegistroServlet" enctype="multipart/form-data"> 
+                        <input type="hidden" name="origem" value="admin">
                         <% if (registroEdit != null) { %>
                             <input type="hidden" name="id" value="<%= registroEdit.getId() %>">
+                            <input type="hidden" name="acao" value="atualizar">
+                        <% } else { %>
+                            <input type="hidden" name="acao" value="inserir">
                         <% } %>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Título</label>
@@ -267,38 +275,79 @@
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Descrição</label>
-                                <textarea class="form-control" name="descricao" rows="2"><%= registroEdit != null ? registroEdit.getDescricao() : "" %></textarea>
+                                <textarea class="form-control" name="descricao" rows="2" required><%= registroEdit != null ? registroEdit.getDescricao() : "" %></textarea>
                             </div>
-                            <div class="col-md-4 mb-3">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Foto</label>
+                                <input type="file" class="form-control" name="foto" accept="image/*">
+                                <% if (registroEdit != null) { %>
+                                    <small class="text-muted">
+                                        <% 
+                                            byte[] fotoBytes = registroDAO.getImagemById(registroEdit.getId());
+                                            if (fotoBytes != null && fotoBytes.length > 0) { 
+                                        %>
+                                            <a href="MostrarImagemServlet?id=<%= registroEdit.getId() %>&tipo=registro" target="_blank">Ver foto atual</a>
+                                        <% } else { %>
+                                            Nenhuma foto cadastrada
+                                        <% } %>
+                                    </small>
+                                <% } %>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
                                 <label class="form-label">Latitude</label>
                                 <input type="number" step="any" class="form-control" name="latitude" value="<%= registroEdit != null ? registroEdit.getLatitude() : "" %>" required>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-3 mb-3">
                                 <label class="form-label">Longitude</label>
                                 <input type="number" step="any" class="form-control" name="longitude" value="<%= registroEdit != null ? registroEdit.getLongitude() : "" %>" required>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" name="status">
                                     <option value="PENDENTE" <%= registroEdit != null && "PENDENTE".equals(registroEdit.getStatus()) ? "selected" : "" %>>Pendente</option>
+                                    <option value="EM_ANDAMENTO" <%= registroEdit != null && "EM_ANDAMENTO".equals(registroEdit.getStatus()) ? "selected" : "" %>>Em Andamento</option>
                                     <option value="RESOLVIDO" <%= registroEdit != null && "RESOLVIDO".equals(registroEdit.getStatus()) ? "selected" : "" %>>Resolvido</option>
                                 </select>
                             </div>
+
+                            <!-- Campo para criar post no blog -->
+                            <div class="col-md-6 mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="criarPost" id="criarPost">
+                                    <label class="form-check-label" for="criarPost">
+                                        Criar post no blog automaticamente
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary"><%= registroEdit != null ? "Salvar" : "Cadastrar" %></button>
-                        <% if (registroEdit != null) { %> <a href="admin.jsp?tab=registros" class="btn btn-secondary">Cancelar</a> <% } %>
+                        <% if (registroEdit != null) { %> 
+                            <a href="admin.jsp?tab=registros" class="btn btn-secondary">Cancelar</a> 
+                        <% } %>
                     </form>
                 </div>
 
                 <div class="table-responsive">
                     <table class="table table-hover">
-                        <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+                        <thead><tr><th>ID</th><th>Título</th><th>Usuário</th><th>Tipo</th><th>Status</th><th>Data</th><th>Ações</th></tr>
+                        </thead>
                         <tbody>
                             <% for(Registro r : registros) { %>
                             <tr>
                                 <td><%= r.getId() %></td>
                                 <td><%= r.getTitulo() %></td>
-                                <td><span class="badge badge-<%= "POSITIVO".equals(r.getTipoRegistro().getCategoria()) ? "positivo" : "negativo" %>"><%= r.getStatus() %></span></td>
+                                <td><%= r.getUsuario() != null ? r.getUsuario().getNome() : "N/A" %></td>
+                                <td><%= r.getTipoRegistro().getNome() %></td>
+                                <td>
+                                    <span class="badge 
+                                        <%= "PENDENTE".equals(r.getStatus()) ? "bg-warning" : 
+                                             "EM_ANDAMENTO".equals(r.getStatus()) ? "bg-info" : 
+                                             "RESOLVIDO".equals(r.getStatus()) ? "bg-success" : "bg-secondary" %>">
+                                        <%= r.getStatus() %>
+                                    </span>
+                                </td>
                                 <td><%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(r.getData()) %></td>
                                 <td>
                                     <a href="admin.jsp?editId=<%= r.getId() %>&editType=registro&tab=registros" class="btn btn-sm btn-outline-primary btn-acao">Editar</a>
@@ -309,7 +358,6 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
 
             <div id="tab-tipos" class="tab-section <%= activeTab.equals("tipos") ? "active" : "" %>">
                 <div class="d-flex justify-content-between align-items-center mb-3">

@@ -25,18 +25,25 @@
 %>
 
 <%
-    
     String acao = request.getParameter("acao");
+    String filtro = request.getParameter("filtro");
     
     RegistroDAO registroDAO = new RegistroDAO();
     TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
-    List<Registro> registros = registroDAO.listarTodos();
     List<TipoRegistro> tiposRegistro = tipoRegistroDAO.listarTodos();
+    
+    // Carregar registros com filtro
+    List<Registro> registros;
+    if ("meus".equals(filtro) && estaLogado) {
+        registros = registroDAO.listarPorUsuario(usuario.getId());
+    } else {
+        registros = registroDAO.listarTodos();
+    }
     
     String sucesso = request.getParameter("sucesso");
     String erro = request.getParameter("erro");
-
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -193,37 +200,60 @@
                   </form>
             </div>
             
-            <div class="lista-registros">
-                <h5>Registros (<%= registros.size() %>)</h5>
-                <div id="lista-registros-container">
-                    <% for(Registro registro : registros) { 
-                        String badgeClass = "";
-                        if ("PENDENTE".equals(registro.getStatus())) {
-                            badgeClass = "warning";
-                        } else if ("RESOLVIDO".equals(registro.getStatus())) {
-                            badgeClass = "success";
-                        } else {
-                            badgeClass = "info";
-                        }
-                    %>
-                        <div class="registro-item <%= "POSITIVO".equals(registro.getTipoRegistro().getCategoria()) ? "categoria-positivo" : "categoria-negativo" %>"
-                             onclick="mostrarNoMapa(<%= registro.getLatitude() %>, <%= registro.getLongitude() %>, '<%= registro.getTitulo().replace("'", "\\'") %>', '<%= registro.getDescricao().replace("'", "\\'") %>')">
-                            <strong><%= registro.getTitulo() %></strong>
-                            <div class="mt-1">
-                                <small class="text-muted">
-                                    <%= registro.getTipoRegistro().getNome() %> • 
-                                    <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %>
-                                </small>
-                            </div>
-                            <div class="mt-1">
-                                <span class="badge bg-<%= badgeClass %>">
-                                    <%= registro.getStatus() %>
-                                </span>
-                            </div>
-                        </div>
+           <div class="lista-registros">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Registros (<%= registros.size() %>)</h5>
+        <% if (estaLogado) { %>
+            <div class="btn-group btn-group-sm">
+                <a href="mapa.jsp?filtro=todos" class="btn btn-outline-secondary <%= !"meus".equals(filtro) ? "active" : "" %>">Todos</a>
+                <a href="mapa.jsp?filtro=meus" class="btn btn-outline-primary <%= "meus".equals(filtro) ? "active" : "" %>">Meus</a>
+            </div>
+        <% } %>
+    </div>
+    
+    <div id="lista-registros-container">
+        <% for(Registro registro : registros) { 
+            String badgeClass = "";
+            if ("PENDENTE".equals(registro.getStatus())) {
+                badgeClass = "warning";
+            } else if ("RESOLVIDO".equals(registro.getStatus())) {
+                badgeClass = "success";
+            } else {
+                badgeClass = "info";
+            }
+            
+            // Verifica se é do usuário logado
+            boolean meuRegistro = estaLogado && registro.getUsuario() != null && 
+                                 registro.getUsuario().getId().equals(usuario.getId());
+        %>
+            <div class="registro-item <%= "POSITIVO".equals(registro.getTipoRegistro().getCategoria()) ? "categoria-positivo" : "categoria-negativo" %> <%= meuRegistro ? "meu-registro" : "" %>"
+                 onclick="mostrarNoMapa(<%= registro.getLatitude() %>, <%= registro.getLongitude() %>, '<%= registro.getTitulo().replace("'", "\\'") %>', '<%= registro.getDescricao().replace("'", "\\'") %>')">
+                <div class="d-flex justify-content-between align-items-start">
+                    <strong><%= registro.getTitulo() %></strong>
+                    <% if (meuRegistro) { %>
+                        <span class="badge bg-primary badge-sm">Meu</span>
+                    <% } %>
+                </div>
+                <div class="mt-1">
+                    <small class="text-muted">
+                        <%= registro.getTipoRegistro().getNome() %> • 
+                        <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %>
+                    </small>
+                </div>
+                <div class="mt-1">
+                    <span class="badge bg-<%= badgeClass %>">
+                        <%= registro.getStatus() %>
+                    </span>
+                    <% if (registro.getUsuario() != null) { %>
+                        <small class="text-muted ms-2">
+                            por <%= registro.getUsuario().getNome().split(" ")[0] %>
+                        </small>
                     <% } %>
                 </div>
             </div>
+        <% } %>
+    </div>
+</div>
         </div>
         
         <!-- Botão Flutuante -->
@@ -303,12 +333,15 @@
             var popupContent = 
                 '<div class="popup-content">' +
                 '<h6><%= registro.getTitulo().replace("'", "\\'") %></h6>' +
-'<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +                // ----------------------------------------------
+                '<img src="MostrarImagemServlet?id=<%= registro.getId() %>&tipo=registro" style="max-width: 100%; height: auto; border-radius: 4px; margin-bottom: 8px;" onerror="this.style.display=\'none\'">' +
                 '<p><%= registro.getDescricao().replace("'", "\\'") %></p>' +
                 '<div class="popup-details">' +
                 '<small><strong>Tipo:</strong> <%= registro.getTipoRegistro().getNome() %></small><br>' +
                 '<small><strong>Status:</strong> <%= registro.getStatus() %></small><br>' +
-                '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small>' +
+                '<small><strong>Data:</strong> <%= new java.text.SimpleDateFormat("dd/MM/yyyy").format(registro.getData()) %></small><br>' +
+                <% if (registro.getUsuario() != null) { %>
+                    '<small><strong>Registrado por:</strong> <%= registro.getUsuario().getNome() %></small>' +
+                <% } %>
                 '</div>' +
                 '</div>';
 

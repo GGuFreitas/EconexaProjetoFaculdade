@@ -32,14 +32,44 @@ public class SalvarRegistroServlet extends HttpServlet {
         
         String message = null;
         boolean sucesso = false;
+        String origem = request.getParameter("origem"); // "admin" ou null
+        String acao = request.getParameter("acao"); // "inserir" ou "atualizar"
+        
+        HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+        
+        if (usuario == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
         
         try {
-            Registro registro = new Registro();
+            RegistroDAO registroDAO = new RegistroDAO();
+            Registro registro;
+            
+            if ("atualizar".equals(acao)) {
+                // Modo atualização
+                Long id = Long.parseLong(request.getParameter("id"));
+                registro = registroDAO.buscarPorId(id);
+                if (registro == null) {
+                    throw new Exception("Registro não encontrado para atualização");
+                }
+            } else {
+                // Modo inserção
+                registro = new Registro();
+            }
             
             registro.setTitulo(request.getParameter("titulo"));
             registro.setDescricao(request.getParameter("descricao"));
             registro.setLatitude(Double.parseDouble(request.getParameter("latitude")));
             registro.setLongitude(Double.parseDouble(request.getParameter("longitude")));
+            
+            String status = request.getParameter("status");
+            if (status != null) {
+                registro.setStatus(status);
+            } else {
+                registro.setStatus("PENDENTE");
+            }
             
             Long tipoRegistroId = Long.parseLong(request.getParameter("tipoRegistroId"));
             TipoRegistro tipo = new TipoRegistro();
@@ -62,22 +92,19 @@ public class SalvarRegistroServlet extends HttpServlet {
                 registro.setFotoStream(new ByteArrayInputStream(imagemBytes));
             }
 
-            registro.setStatus("PENDENTE");
-            registro.setData(new Date());
-
-            Long novoId = new RegistroDAO().inserir(registro);
-            sucesso = (novoId != null);
-
-            if (sucesso) {
-                message = "Registro criado com sucesso!";
+            if ("inserir".equals(acao)) {
+                registro.setData(new Date());
+                registro.setUsuario(usuario);
                 
-                String criarPost = request.getParameter("criarPost");
-                
-                if (criarPost != null && criarPost.equals("on")) {
-                    HttpSession session = request.getSession();
-                    Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+                Long novoId = registroDAO.inserir(registro);
+                sucesso = (novoId != null);
+
+                if (sucesso) {
+                    message = "Registro criado com sucesso!";
                     
-                    if (usuario != null) {
+                    String criarPost = request.getParameter("criarPost");
+                    
+                    if (criarPost != null && criarPost.equals("on")) {
                         Blog post = new Blog();
                         post.setTitulo("Relato: " + registro.getTitulo());
                         post.setDescricao(registro.getDescricao());
@@ -94,21 +121,31 @@ public class SalvarRegistroServlet extends HttpServlet {
                         message += " E postado no Blog!";
                     }
                 }
-                
             } else {
-                message = "Erro ao criar registro.";
+                // Atualização
+                sucesso = registroDAO.atualizar(registro);
+                message = sucesso ? "Registro atualizado com sucesso!" : "Erro ao atualizar registro";
             }
 
         } catch (Exception e) {
             message = "ERRO: " + e.getMessage();
             e.printStackTrace();
+            sucesso = false;
         } finally {
             String encodedMessage = URLEncoder.encode(message, "UTF-8");
             
-            if (sucesso) {
-                response.sendRedirect("mapa.jsp?sucesso=" + encodedMessage);
+            if ("admin".equals(origem)) {
+                if (sucesso) {
+                    response.sendRedirect("admin.jsp?tab=registros&sucesso=" + encodedMessage);
+                } else {
+                    response.sendRedirect("admin.jsp?tab=registros&erro=" + encodedMessage);
+                }
             } else {
-                response.sendRedirect("mapa.jsp?erro=" + encodedMessage);
+                if (sucesso) {
+                    response.sendRedirect("mapa.jsp?sucesso=" + encodedMessage);
+                } else {
+                    response.sendRedirect("mapa.jsp?erro=" + encodedMessage);
+                }
             }
         }
     }
