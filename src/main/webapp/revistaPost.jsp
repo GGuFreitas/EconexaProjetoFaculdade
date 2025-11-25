@@ -134,3 +134,88 @@
                                 <strong><%= post.getTitulo() %></strong>
                                 <div class="texto-registro">
                                     <span class="registro-autor">
+                                        Por: <%= post.getAutor() %>
+                                    </span>
+                                </div>
+                                
+                                <div class="descricao-registro">
+                                    <span class="descricao-texto">
+                                        <%= post.getDescricao() %>
+                                    </span>
+                                </div>
+                                
+                                <div class="data-registro">
+                                    <small class="registro-data">
+                                        <p><%= new java.text.SimpleDateFormat("dd/MM/yyyy 'às' HH:mm").format(post.getDataPublicacao()) %></p>
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <img src="MostrarImagemServlet?id=<%= post.getId() %>" 
+                                 alt="<%= post.getTitulo() %>"
+                                 class="post-imagem"
+                                 onerror="this.style.display='none'; this.parentElement.classList.add('no-grid-image');"/>
+                        </div>
+                    </section>
+                </div>
+            <% } %>
+        </div>
+        
+        <div class="sidebar" id="sidebar-main">
+            <div class="form-novo-registro">
+                <h5>Nova Publicação na Revista</h5>
+                
+                <form method="POST" action="SalvarRevistaPostServlet" id="formRegistro" enctype="multipart/form-data">
+                    
+                    <div class="mb-2">
+                        <label class="form-label">Título</label>
+                        <input type="text" class="form-control" name="titulo" placeholder="Digite o título" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Descrição</label>
+                        <textarea class="form-control" name="descricao" placeholder="Escreva o conteúdo..." rows="4"></textarea>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label class="form-label">Foto de Capa</label>
+                        <input type="file" class="form-control" name="foto_capa" accept="image/*">
+                    </div>
+                    
+                    <div class="d-grid gap-2" style="margin-top: 20px;">
+                        
+                        <% if (estaLogado) { %>
+                            <button type="submit" class="btn btn-success">
+                                Publicar na Revista
+                            </button>
+                        <% } else { %>
+                            <a href="login.jsp" class="btn btn-secondary">
+                                Faça login para publicar
+                            </a>
+                        <% } %>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
+            Postar
+        </button>
+        
+        <script src="resources/js/bootstrap.js"></script>
+        <script>
+             function focarNoFormulario() {
+                 const sidebar = document.getElementById("sidebar-main");
+                 const button = document.getElementById("btnNovoRegistro");
+                 
+                 if (button.textContent === 'Fechar') {
+                     button.textContent = 'Postar';
+                 } else {
+                     button.textContent = 'Fechar';
+                 }
+                 
+                 sidebar.classList.toggle('is-visible');
+             }
+        </script>
+        
+    </body>
+</html>
