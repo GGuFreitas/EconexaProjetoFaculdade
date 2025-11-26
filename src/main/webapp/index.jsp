@@ -67,7 +67,7 @@
                                             <small class="text-muted"><%= usuario.getEmail() %></small>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                        <li><a class="dropdown-item" href="meuPerfil.jsp">Meu Perfil</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item text-danger" href="LoginServlet">
                                             <i class="fas fa-sign-out-alt"></i> Sair
