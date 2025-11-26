@@ -94,15 +94,15 @@ CREATE TABLE IF NOT EXISTS revista_post (
     autor VARCHAR(200) NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id));
 
-CREATE TABLE Log (
+CREATE TABLE IF NOT EXISTS Log (
     id_log BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome_tabela VARCHAR(100) NOT NULL,
-    id_registro_alterado INT NOT NULL,
+    id_registro_alterado BIGINT NOT NULL,
     acao VARCHAR(10) NOT NULL,
-    data_hora  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    usuario VARCHAR(100) DEFAULT CURRENT _USER(),
+    data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario VARCHAR(100),
     dados_antigos TEXT,
-    dados_novos TEXT,
+    dados_novos TEXT
 );
 
 INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
@@ -153,55 +153,267 @@ SELECT
 FROM registro
 WHERE id = 1;
 
-
--- Procedures
-
-CREATE TRIGGER trg_log_usuarios_update AFTER UPDATE ON usuarios
+-- Triggers
+-- Trigger para UPDATE em usuarios
+DELIMITER $$
+CREATE TRIGGER trg_log_usuarios_update 
+AFTER UPDATE ON usuarios
 FOR EACH ROW
 BEGIN 
-    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
-    VALUES('usuario', 
-            OLD.id,
-            'UPDATE', 
-            USER(), 
-            CONCAT('Nome antigo: ', OLD.nome, 'email Antigo:' OLD.email, 'Senha_hash antiga: ', OLD.senha_hash, 'perfil antigo: ', OLD.perfil),
-            CONCAT('Nome novo: ', NEW.nome, 'email novo:' NEW.email, 'Senha_hash novo: ', NEW.senha_hash, 'perfil novo: ', NEW.perfil)
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuarios', 
+           OLD.id,
+           'UPDATE', 
+           USER(), 
+           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil),
+           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil)
           );
-END;
+END$$
+DELIMITER ;
 
-CREATE TRIGGER trg_log_usuarios_insert AFTER INSERT ON usuarios
+-- Trigger para INSERT em usuarios
+DELIMITER $$
+CREATE TRIGGER trg_log_usuarios_insert 
+AFTER INSERT ON usuarios
 FOR EACH ROW
 BEGIN 
-    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
-    VALUES('usuario', 
-            NEW.id,
-            'INSERT', 
-            USER(), 
-            CONCAT('Novo Usuario ID: ', NEW.id)
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuarios', 
+           NEW.id,
+           'INSERT', 
+           USER(), 
+           NULL,
+           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil)
           );
-END;
+END$$
+DELIMITER ;
 
-
-CREATE TRIGGER trg_log_usuarios_delete AFTER DELETE ON usuarios
+-- Trigger para DELETE em usuarios
+DELIMITER $$
+CREATE TRIGGER trg_log_usuarios_delete 
+AFTER DELETE ON usuarios
 FOR EACH ROW
 BEGIN 
-    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
-    VALUES('usuario', 
-            NEW.id,
-            'INSERT', 
-            USER(), 
-            CONCAT('ANTIGO Usuario ID: ', OLD.id)
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuarios', 
+           OLD.id,
+           'DELETE', 
+           USER(), 
+           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil),
+           NULL
           );
-END;
+END$$
+DELIMITER ;
+
+-- Tipo_registro
+-- Trigger para UPDATE em tipo_registro
+DELIMITER $$
+CREATE TRIGGER trg_log_tipo_registro_update 
+AFTER UPDATE ON tipo_registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('tipo_registro', 
+           OLD.id,
+           'UPDATE', 
+           USER(), 
+           CONCAT('Nome: ', OLD.nome, ' | Categoria: ', OLD.categoria),
+           CONCAT('Nome: ', NEW.nome, ' | Categoria: ', NEW.categoria)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para INSERT em tipo_registro
+DELIMITER $$
+CREATE TRIGGER trg_log_tipo_registro_insert 
+AFTER INSERT ON tipo_registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('tipo_registro', 
+           NEW.id,
+           'INSERT', 
+           USER(), 
+           NULL,
+           CONCAT('Nome: ', NEW.nome, ' | Categoria: ', NEW.categoria)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para DELETE em tipo_registro
+DELIMITER $$
+CREATE TRIGGER trg_log_tipo_registro_delete 
+AFTER DELETE ON tipo_registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('tipo_registro', 
+           OLD.id,
+           'DELETE', 
+           USER(), 
+           CONCAT('Nome: ', OLD.nome, ' | Categoria: ', OLD.categoria),
+           NULL
+          );
+END$$
+DELIMITER ;
 
 
 
 
-CREATE TABLE IF NOT EXISTS usuarios (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(150) NOT NULL,
-    email VARCHAR(150) NOT NULL UNIQUE,
-    senha_hash VARCHAR(255) NOT NULL,
-    perfil ENUM('MEMBRO', 'ADMIN') DEFAULT 'MEMBRO',
-    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- Trigger para UPDATE em registro
+DELIMITER $$
+CREATE TRIGGER trg_log_registro_update 
+AFTER UPDATE ON registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('registro', 
+           OLD.id,
+           'UPDATE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status, ' | Tipo: ', OLD.tipo_registro_id),
+           CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status, ' | Tipo: ', NEW.tipo_registro_id)
+          );
+END$$
+DELIMITER ;
+
+
+--Registro Trigger
+-- Trigger para INSERT em registro
+DELIMITER $$
+CREATE TRIGGER trg_log_registro_insert 
+AFTER INSERT ON registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('registro', 
+           NEW.id,
+           'INSERT', 
+           USER(), 
+           NULL,
+           CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status, ' | Tipo: ', NEW.tipo_registro_id, ' | Usuário: ', NEW.usuario_id)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para DELETE em registro
+DELIMITER $$
+CREATE TRIGGER trg_log_registro_delete 
+AFTER DELETE ON registro
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('registro', 
+           OLD.id,
+           'DELETE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status, ' | Tipo: ', OLD.tipo_registro_id),
+           NULL
+          );
+END$$
+DELIMITER ;
+
+
+--blog
+-- Trigger para UPDATE em blog_post
+DELIMITER $$
+CREATE TRIGGER trg_log_blog_post_update 
+AFTER UPDATE ON blog_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('blog_post', 
+           OLD.id,
+           'UPDATE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status_publicacao),
+           CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status_publicacao)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para INSERT em blog_post
+DELIMITER $$
+CREATE TRIGGER trg_log_blog_post_insert 
+AFTER INSERT ON blog_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('blog_post', 
+           NEW.id,
+           'INSERT', 
+           USER(), 
+           NULL,
+           CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status_publicacao, ' | Usuário: ', NEW.usuario_id)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para DELETE em blog_post
+DELIMITER $$
+CREATE TRIGGER trg_log_blog_post_delete 
+AFTER DELETE ON blog_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('blog_post', 
+           OLD.id,
+           'DELETE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status_publicacao),
+           NULL
+          );
+END$$
+DELIMITER ;
+
+--Revista
+-- Trigger para UPDATE em revista_post
+DELIMITER $$
+CREATE TRIGGER trg_log_revista_post_update 
+AFTER UPDATE ON revista_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('revista_post', 
+           OLD.id,
+           'UPDATE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Autor: ', OLD.autor),
+           CONCAT('Título: ', NEW.titulo, ' | Autor: ', NEW.autor)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para INSERT em revista_post
+DELIMITER $$
+CREATE TRIGGER trg_log_revista_post_insert 
+AFTER INSERT ON revista_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('revista_post', 
+           NEW.id,
+           'INSERT', 
+           USER(), 
+           NULL,
+           CONCAT('Título: ', NEW.titulo, ' | Autor: ', NEW.autor, ' | Usuário: ', NEW.usuario_id)
+          );
+END$$
+DELIMITER ;
+
+-- Trigger para DELETE em revista_post
+DELIMITER $$
+CREATE TRIGGER trg_log_revista_post_delete 
+AFTER DELETE ON revista_post
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log(nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('revista_post', 
+           OLD.id,
+           'DELETE', 
+           USER(), 
+           CONCAT('Título: ', OLD.titulo, ' | Autor: ', OLD.autor),
+           NULL
+          );
+END$$
+DELIMITER ;
