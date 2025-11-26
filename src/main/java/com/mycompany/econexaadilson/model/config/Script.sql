@@ -75,6 +75,17 @@ CREATE TABLE IF NOT EXISTS revista_post (
     autor VARCHAR(200) NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id));
 
+CREATE TABLE Log (
+    id_log BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome_tabela VARCHAR(100) NOT NULL,
+    id_registro_alterado INT NOT NULL,
+    acao VARCHAR(10) NOT NULL,
+    data_hora  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    usuario VARCHAR(100) DEFAULT CURRENT _USER(),
+    dados_antigos TEXT,
+    dados_novos TEXT,
+);
+
 INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
 ('Problema na Via', 'NEGATIVO', 'Buracos, asfalto ruim, calçadas quebradas, obstruções', 'fa-road'),
 ('Iluminação', 'NEGATIVO', 'Lâmpadas queimadas, postes quebrados, áreas escuras', 'fa-lightbulb'),
@@ -122,3 +133,56 @@ SELECT
     id
 FROM registro
 WHERE id = 1;
+
+
+-- Procedures
+
+CREATE TRIGGER trg_log_usuarios_update AFTER UPDATE ON usuarios
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuario', 
+            OLD.id,
+            'UPDATE', 
+            USER(), 
+            CONCAT('Nome antigo: ', OLD.nome, 'email Antigo:' OLD.email, 'Senha_hash antiga: ', OLD.senha_hash, 'perfil antigo: ', OLD.perfil),
+            CONCAT('Nome novo: ', NEW.nome, 'email novo:' NEW.email, 'Senha_hash novo: ', NEW.senha_hash, 'perfil novo: ', NEW.perfil)
+          );
+END;
+
+CREATE TRIGGER trg_log_usuarios_insert AFTER INSERT ON usuarios
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuario', 
+            NEW.id,
+            'INSERT', 
+            USER(), 
+            CONCAT('Novo Usuario ID: ', NEW.id)
+          );
+END;
+
+
+CREATE TRIGGER trg_log_usuarios_delete AFTER DELETE ON usuarios
+FOR EACH ROW
+BEGIN 
+    INSERT INTO Log( nome_tabela, id_registro_alterado, acao, usuario, dados_antigos, dados_novos) 
+    VALUES('usuario', 
+            NEW.id,
+            'INSERT', 
+            USER(), 
+            CONCAT('ANTIGO Usuario ID: ', OLD.id)
+          );
+END;
+
+
+
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha_hash VARCHAR(255) NOT NULL,
+    perfil ENUM('MEMBRO', 'ADMIN') DEFAULT 'MEMBRO',
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

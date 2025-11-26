@@ -328,7 +328,7 @@
                         <% } %>
                     </form>
                 </div>
-
+                       
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead><tr><th>ID</th><th>Título</th><th>Usuário</th><th>Tipo</th><th>Status</th><th>Data</th><th>Ações</th></tr>
@@ -358,7 +358,7 @@
                         </tbody>
                     </table>
                 </div>
-
+            </div> 
             <div id="tab-tipos" class="tab-section <%= activeTab.equals("tipos") ? "active" : "" %>">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2>Gerenciar Tipos (Categorias)</h2>

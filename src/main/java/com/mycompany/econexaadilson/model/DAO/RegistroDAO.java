@@ -72,44 +72,47 @@ public class RegistroDAO {
 
 
     public boolean atualizar(Registro registro) {
-        String sql = "UPDATE registro SET titulo=?, descricao=?, data=?, latitude=?, longitude=?, foto=?, status=?, tipo_registro_id=? WHERE id=?";
+     // Verificar se há nova foto
+     boolean temNovaFoto = (registro.getFotoStream() != null) || 
+                           (registro.getFotoBytes() != null && registro.getFotoBytes().length > 0);
 
-        try (Connection conn = ConexaoBanco.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+     String sql;
+     if (temNovaFoto) {
+         sql = "UPDATE registro SET titulo=?, descricao=?, latitude=?, longitude=?, foto=?, status=?, tipo_registro_id=? WHERE id=?";
+     } else {
+         sql = "UPDATE registro SET titulo=?, descricao=?, latitude=?, longitude=?, status=?, tipo_registro_id=? WHERE id=?";
+     }
 
-            stmt.setString(1, registro.getTitulo());
-            stmt.setString(2, registro.getDescricao());
-            stmt.setTimestamp(3, new Timestamp(registro.getData().getTime()));
-            stmt.setDouble(4, registro.getLatitude());
-            stmt.setDouble(5, registro.getLongitude());
+     try (Connection conn = ConexaoBanco.getConnection();
+          PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            
-            if (registro.getFotoStream() != null) {
-                stmt.setBlob(6, registro.getFotoStream());
-            } else if (registro.getFotoBytes() != null && registro.getFotoBytes().length > 0) {
-                
-                stmt.setBytes(6, registro.getFotoBytes());
-            } else {
-                stmt.setNull(6, java.sql.Types.BLOB);
-            }
+         int paramIndex = 1;
+         stmt.setString(paramIndex++, registro.getTitulo());
+         stmt.setString(paramIndex++, registro.getDescricao());
+         stmt.setDouble(paramIndex++, registro.getLatitude());
+         stmt.setDouble(paramIndex++, registro.getLongitude());
 
-            stmt.setString(7, registro.getStatus());
+         if (temNovaFoto) {
+             if (registro.getFotoStream() != null) {
+                 stmt.setBlob(paramIndex++, registro.getFotoStream());
+             } else if (registro.getFotoBytes() != null && registro.getFotoBytes().length > 0) {
+                 stmt.setBytes(paramIndex++, registro.getFotoBytes());
+             } else {
+                 stmt.setNull(paramIndex++, java.sql.Types.BLOB);
+             }
+         }
 
-            if (registro.getTipoRegistro() != null) {
-                stmt.setLong(8, registro.getTipoRegistro().getId());
-            } else {
-                stmt.setNull(8, java.sql.Types.BIGINT);
-            }
+         stmt.setString(paramIndex++, registro.getStatus());
+         stmt.setLong(paramIndex++, registro.getTipoRegistro().getId());
+         stmt.setLong(paramIndex++, registro.getId());
 
-            stmt.setLong(9, registro.getId());
+         return stmt.executeUpdate() > 0;
 
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+     } catch (SQLException e) {
+         e.printStackTrace();
+         return false;
+     }
+ }
 
     public boolean excluir(Long id) {
         String sql = "DELETE FROM registro WHERE id=?";
