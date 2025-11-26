@@ -1,5 +1,5 @@
 <%-- 
-    Author   : jhonny
+    Author     : jhonny
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
@@ -12,6 +12,8 @@
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
     
     boolean estaLogado = (usuario != null);
+    Long userId = estaLogado ? usuario.getId() : null; // ID para verificar likes
+    
     String nomeExibicao = "Convidado";
     String emailExibicao = "";
     
@@ -22,7 +24,7 @@
     }
 
     BlogDAO postDAO = new BlogDAO();
-    List<Blog> posts = postDAO.listarTodosPublicados();
+    List<Blog> posts = postDAO.listarTodosPublicados(userId);
     
     String sucesso = request.getParameter("sucesso");
     String erro = request.getParameter("erro");
@@ -35,6 +37,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="resources/css/blog.css" rel="stylesheet" type="text/css"/>
+        <style>
+            .action-btn.active .icon-heart { fill: #e74c3c; stroke: #e74c3c; }
+            .action-btn.active .icon-bookmark { fill: #f1c40f; stroke: #f1c40f; }
+            .icon-heart, .icon-bookmark, .icon-comment { fill: none; stroke: white; stroke-width: 2; }
+            .like-count { color: white; font-weight: bold; margin-left: 5px; font-size: 0.9rem; }
+        </style>
     </head>
     <body>
         
@@ -77,7 +85,7 @@
                                             <small class="text-muted"><%= usuario.getEmail() %></small>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="#">Meu Perfil</a></li>
+                                        <li><a class="dropdown-item" href="meuPerfil.jsp">Meu Perfil</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item text-danger" href="LoginServlet">
                                             <i class="fas fa-sign-out-alt"></i> Sair
@@ -99,9 +107,6 @@
             <div class="perfil">
                 <div class="perfil-avatar">
                     <% if (estaLogado) { %>
-                    
-                        <!-- Se tiver foto de perfil, coloque aqui. Por enquanto, inicial do nome -->
-                        
                         <img src="https://placehold.co/50x50/27ae60/FFF?text=<%= nomeExibicao.substring(0,1) %>" alt="Avatar"/>
                     <% } else { %>
                         <img src="https://placehold.co/50x50/CCC/FFF?text=?" alt="Avatar Visitante"/>
@@ -111,21 +116,25 @@
                     <strong><%= estaLogado ? usuario.getNome() : "Visitante" %></strong>
                     <small><%= estaLogado ? usuario.getEmail() : "Faça login para interagir" %></small>
                 </div>
+                
+                <div>
+                    <a class="btn btn-light" href="meuPerfil.jsp">Meu perfil</a>
+                </div>
             </div>
 
             <!-- Alertas -->
-    <% if (sucesso != null) { %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <%= sucesso %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <% } %>
-    <% if (erro != null) { %>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <%= erro %>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <% } %>
+            <% if (sucesso != null) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= sucesso %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+            <% if (erro != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= erro %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
             
             <!-- Lista de Posts -->
             <% for(Blog post : posts) { %>
@@ -159,6 +168,27 @@
                                  onerror="this.style.display='none'; this.parentElement.classList.add('no-grid-image');"/>
                         </div>
                     </section>
+                    
+                    <div class="post-actions">
+                        <!-- Botão Curtir -->
+                        <button class="action-btn <%= post.isCurtidoPeloUsuario() ? "active" : "" %>" 
+                                onclick="interagirPost(this, <%= post.getId() %>, 'like')"
+                                title="Curtir">
+                            <svg viewBox="0 0 24 24" class="icon-heart">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            <span class="like-count"><%= post.getTotalCurtidas() %></span>
+                        </button>
+                        
+                        <button class="action-btn <%= post.isSalvoPeloUsuario() ? "active" : "" %>"
+                                onclick="interagirPost(this, <%= post.getId() %>, 'save')"
+                                title="Salvar no Perfil">
+                            <svg viewBox="0 0 24 24" class="icon-bookmark">
+                                <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
                 </div>
             <% } %>
         </div>
@@ -185,7 +215,6 @@
                     </div>
                     
                     <div class="d-grid gap-2" style="margin-top: 20px;">
-                        
                         <% if (estaLogado) { %>
                             <button type="submit" class="btn btn-success">
                                 Publicar Post
@@ -217,6 +246,49 @@
                 }
                 
                 sidebar.classList.toggle('is-visible');
+            }
+
+            function interagirPost(btnElement, postId, tipo) {
+                <% if (!estaLogado) { %>
+                    alert("Faça login para interagir!");
+                    return;
+                <% } %>
+
+                var isAdding = !btnElement.classList.contains('active');
+                btnElement.classList.toggle('active');
+                
+                if (tipo === 'like') {
+                    var countSpan = btnElement.querySelector('.like-count');
+                    var currentCount = parseInt(countSpan.innerText);
+                    if (isAdding) {
+                        countSpan.innerText = currentCount + 1;
+                    } else {
+                        countSpan.innerText = Math.max(0, currentCount - 1);
+                    }
+                }
+
+                fetch('InteracaoServlet', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'postId=' + postId + '&tipo=' + tipo
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        btnElement.classList.toggle('active');
+                        if (tipo === 'like') {
+                            var countSpan = btnElement.querySelector('.like-count');
+                            var currentCount = parseInt(countSpan.innerText);
+                            countSpan.innerText = isAdding ? currentCount - 1 : currentCount + 1;
+                        }
+                        alert("Erro ao processar ação. Tente novamente.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    btnElement.classList.toggle('active');
+                });
             }
         </script>
         

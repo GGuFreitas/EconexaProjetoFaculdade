@@ -8,7 +8,6 @@ body {
     animation: fadeInPage 1s ease-out;
 }
 
-/* Dropdown do usuário */
 .user-info {
     text-align: right;
 }
@@ -61,87 +60,86 @@ body {
 }
 
 
-/* Lista de registros */
 .lista-registros {
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
-    padding-bottom: 20px; 
+    padding-bottom: 40px;
 }
 
 .main-header {
-  background-color: transparent;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  height: 60px;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 60px;
 }
 
 .nav-item {
-  margin: 0 2px;
+    margin: 0 2px;
 }
 
 .main-header .nav-pills .nav-link {
-  background-color: rgba(255, 255, 255, 0.674);
-  backdrop-filter: blur(10px) saturate(120%);
-  border: 1px solid rgba(255,255,255,0.6);
-  box-shadow: 0 8px 24px rgba(11,22,40,0.12);
-  border-radius: 2rem;
-  color: #292929; 
-  padding: 0.4rem 1rem;
-  text-align: center;
+    background-color: rgba(255, 255, 255, 0.674);
+    backdrop-filter: blur(10px) saturate(120%);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+    border-radius: 2rem;
+    color: #292929; 
+    padding: 0.4rem 1rem;
+    text-align: center;
 }
 
 .main-header .nav-pills .nav-link:hover {
-  background-color: #d8d8d82f; 
-  border-radius: 2rem; 
-  color: white;
+    background-color: #d8d8d82f; 
+    border-radius: 2rem; 
+    color: white;
 }
 
 .main-header .nav-pills .nav-link.active {
-  background-color: #ffffff; 
-  color: #101010;            
-  border-radius: 2rem;
-  padding: 0.4rem 1rem;
-  text-align: center;
+    background-color: #ffffff; 
+    color: #101010;            
+    border-radius: 2rem;
+    padding: 0.4rem 1rem;
+    text-align: center;
 }
 
 .main-header .nav-pills .nav-link.active:hover {
-  background-color: #ffffffc1; 
-  color: #101010;            
-  border-radius: 2rem;
+    background-color: #ffffffc1; 
+    color: #101010;            
+    border-radius: 2rem;
 }
 
 .main-header .nav-link {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 .main-header .nav-link.active {
-  background-color: #ffffff;
-  color: #101010;
-  border-radius: 2rem;
+    background-color: #ffffff;
+    color: #101010;
+    border-radius: 2rem;
 }
 
 .navbar-toggler {
-  border-color: rgba(255,255,255,0.2);
-  background-color: white;
-  margin-right: 8px;
+    border-color: rgba(255,255,255,0.2);
+    background-color: white;
+    margin-right: 8px;
 }
 
 .navbar-logo {
-  height: 44px;
-  width: auto;
-  background-color: white;
-  padding: 6px;
-  border-radius: 2rem;
-  box-shadow: 0 8px 24px rgba(11,22,40,0.12);
-  height: 40px;
-  width: auto;
-  display: inline-block;
+    height: 44px;
+    width: auto;
+    background-color: white;
+    padding: 6px;
+    border-radius: 2rem;
+    box-shadow: 0 8px 24px rgba(11,22,40,0.12);
+    height: 40px;
+    width: auto;
+    display: inline-block;
 }
 
 .navbar-brand {
@@ -158,11 +156,10 @@ body {
 }
 
 .main-header .container-fluid {
-  position: relative;
+    position: relative;
 }
 
 
-/* Sidebar com estilo de vidro */
 .sidebar {
     position: absolute;
     top: 80px;
@@ -184,7 +181,6 @@ body {
     overflow-y: auto;
 }
 
-/* Formulário */
 .form-novo-registro {
     background: rgba(255, 255, 255, 0.6);
     padding: 15px;
@@ -213,31 +209,36 @@ body {
     align-items: center;
     background-color: white;
     width: 100%;
-    margin: 12px 0; 
+    margin: 12px 0 45px 0; 
     border-radius: 24px;
     max-width: 900px;
-    overflow: hidden; 
+    
+    overflow: visible; 
+    position: relative;
+    padding-bottom: 10px; 
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
-  min-height: 450px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+    min-height: 450px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border-radius: 24px;
+    overflow: hidden;  
 }
 
 .grid div {
-  text-align: center;
-  padding: 0 4px;
+    text-align: center;
+    padding: 0 4px;
 }
 
 .grid .conteudo {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding: 20px;
 }
 
 .grid .conteudo strong {
@@ -301,22 +302,22 @@ body {
 }
 
 #sidebar-main {
-        transform: translateX(100%); 
-        visibility: hidden;
-        opacity: 0;
+    transform: translateX(100%); 
+    visibility: hidden; 
+    opacity: 0;
 
-        transition: transform 0.4s ease-in-out, 
-                opacity 0.4s ease-in-out, 
-                visibility 0.4s;
+    transition: transform 0.4s ease-in-out, 
+            opacity 0.4s ease-in-out, 
+            visibility 0.4s;
 
-        position: fixed;
-        right: 8px;
-        top: 12px;
-        bottom: 12px;
-        height: 100vh;
-        background-color: #f0f0f0;
-        border-left: 1px solid #ccc;
-    }
+    position: fixed;
+    right: 8px;
+    top: 12px;
+    bottom: 12px;
+    height: 100vh;
+    background-color: #f0f0f0;
+    border-left: 1px solid #ccc;
+}
 
 #sidebar-main.is-visible {
     transform: translateX(0);
@@ -324,7 +325,57 @@ body {
     opacity: 1;
 }
 
+.post-actions {
+    position: absolute;
+    bottom: -20px; 
+    left: 40px;
+    background-color: black; 
+    border-radius: 50px;
+    padding: 8px 25px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 10;
+}
 
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.action-btn svg {
+    width: 24px;
+    height: 24px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.like-count {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.icon-heart { fill: none; stroke: white; stroke-width: 2; }
+.icon-bookmark { fill: none; stroke: white; stroke-width: 2; }
+.icon-comment { fill: none; stroke: white; stroke-width: 2; }
+
+.action-btn.active .icon-heart { fill: #e74c3c; stroke: #e74c3c; }
+.action-btn.active .icon-bookmark { fill: #f1c40f; stroke: #f1c40f; } 
+
+
+/* Regras para Mobile */
 @media (max-width: 768px) {
     .main-header .container-fluid {
         padding-right: 0px;
@@ -334,7 +385,7 @@ body {
     }
     #sidebar-main {
         transform: translateX(100%); 
-        visibility: hidden;
+        visibility: hidden; 
         opacity: 0;
 
         transition: transform 0.4s ease-in-out, 
@@ -379,6 +430,14 @@ body {
     .perfil{
         background-color: #022602;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .post-actions {
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -15px;
+        padding: 8px 25px;
+        gap: 20px;
     }
 }
 
@@ -436,7 +495,7 @@ body {
     width: 100%;
     max-width: 900px;
     padding: 20px;
-    border-radius: 24px;
+    border-radius: 240px;
     box-sizing: border-box; 
 }
 
@@ -473,6 +532,10 @@ body {
     cursor: pointer;
 }
 
+.btn-light {
+    border-radius: 240px;
+}
+
 .registro-autor {
     font-size: 0.9rem;
     color: #555;
@@ -483,7 +546,7 @@ body {
 
 .grid.no-grid-image {
     grid-template-columns: 1fr;
-    text-align: center;        
+    text-align: center;         
 }
 
 .grid.no-grid-image .conteudo {
@@ -492,4 +555,8 @@ body {
 
 img[src=""], img:not([src]) {
     display: none;
+}
+
+.registro-item {
+    padding-bottom: 0;
 }
