@@ -122,14 +122,14 @@
                                 <div class="conteudo">
                                     <div class="d-flex gap-2">
                                             <!-- Botão Editar -->
-                                            <button class="btn btn-sm btn-outline-primary" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
+                                            <button class="btn btn-dark" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
                                                     onclick="prepararEdicao(<%= post.getId() %>, '<%= post.getTitulo().replace("'", "\\'") %>', '<%= post.getDescricao().replace("'", "\\'").replace("\n", " ") %>')"
                                                     title="Editar">
                                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                                             </button>
                                             <!-- Botão Excluir -->
                                             <a href="SalvarPostServlet?acao=excluir&id=<%= post.getId() %>&origem=perfil" 
-                                               class="btn btn-sm btn-outline-danger" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                               class="btn btn-danger" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
                                                onclick="return confirm('Tem certeza que deseja excluir?')" title="Excluir">
                                                 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                                             </a>

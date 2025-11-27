@@ -125,15 +125,20 @@
             </div>
 
             <!-- Alertas -->
-            <% if (sucesso != null) { %>
-                <div class="alert alert-success"><%= sucesso %></div>
+            <% if (request.getParameter("sucesso") != null) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= request.getParameter("sucesso") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             <% } %>
-            <% if (erro != null) { %>
-                <div class="alert alert-danger"><%= erro %></div>
+            <% if (request.getParameter("erro") != null) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= request.getParameter("erro") %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
             <% } %>
             
             <% for(Blog post : posts) { 
-                // Verifica se o usuário logado é dono do post para mostrar botão de edição
                 boolean isDono = estaLogado && usuario.getId().equals(post.getUsuarioId());
             %>
                 <div class="registro-item">
@@ -142,7 +147,7 @@
                             <div class="conteudo">
                                 <% if (isDono) { %>
                                         <div class="d-flex gap-2">
-                                            <button class="btn btn-sm btn-outline-primary" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
+                                            <button class="btn btn-dark" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
                                                     onclick="prepararEdicao(<%= post.getId() %>, '<%= post.getTitulo().replace("'", "\\'") %>', '<%= post.getDescricao().replace("'", "\\'").replace("\n", " ") %>')"
                                                     title="Editar">
                                                 <!-- Ícone Lápis -->
@@ -150,7 +155,7 @@
                                             </button>
                                             
                                             <a href="SalvarPostServlet?acao=excluir&id=<%= post.getId() %>&origem=blog" 
-                                               class="btn btn-sm btn-outline-danger" 
+                                               class="btn btn-danger" 
                                                style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
                                                onclick="return confirm('Tem certeza que deseja excluir este post?')"
                                                title="Excluir">
@@ -200,12 +205,6 @@
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
                             <span class="like-count"><%= post.getTotalCurtidas() %></span>
-                        </button>
-                        
-                        <button class="action-btn" title="Comentar">
-                            <svg viewBox="0 0 24 24" class="icon-comment">
-                                <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                            </svg>
                         </button>
                         
                         <button class="action-btn <%= post.isSalvoPeloUsuario() ? "active" : "" %>"
