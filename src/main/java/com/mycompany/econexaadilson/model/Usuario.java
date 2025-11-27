@@ -5,8 +5,8 @@
 package com.mycompany.econexaadilson.model;
 
 /**
- *
- * @author Enzo Reis
+ * Classe de modelo que representa um usuário do sistema.
+ * Incluído novo campo 'status' para controle de acesso e exclusão lógica.
  */
 
 import java.util.Date;
@@ -17,21 +17,27 @@ public class Usuario {
     private String email;
     private String senhaHash;
     private String perfil; // "MEMBRO" ou "ADMIN"
+    private String status; // 'ATIVO' ou 'INATIVO' para exclusão lógica
     private Date dataCriacao;
 
     // Construtores
     public Usuario() {}
 
-    public Usuario(Long id, String nome, String email, String senhaHash, String perfil, Date dataCriacao) {
+    /**
+     * Construtor completo da classe Usuario.
+     */
+    public Usuario(Long id, String nome, String email, String senhaHash, String perfil, String status, Date dataCriacao) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senhaHash = senhaHash;
         this.perfil = perfil;
+        this.status = status; // Novo campo no construtor
         this.dataCriacao = dataCriacao;
     }
 
     // Getters e Setters
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -47,11 +53,34 @@ public class Usuario {
     public String getPerfil() { return perfil; }
     public void setPerfil(String perfil) { this.perfil = perfil; }
     
+    /**
+     * Getter para o status do usuário ('ATIVO' ou 'INATIVO').
+     */
+    public String getStatus() { return status; }
+    
+    /**
+     * Setter para o status do usuário.
+     */
+    public void setStatus(String status) { this.status = status; }
+    
     public Date getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(Date dataCriacao) { this.dataCriacao = dataCriacao; }
     
-    // Método utilitário
+    // Métodos utilitários
+    
+    /**
+     * Verifica se o usuário possui o perfil de Administrador.
+     */
     public boolean isAdmin() {
         return "ADMIN".equals(this.perfil);
+    }
+    
+    /**
+     * Verifica se o usuário está ativo no sistema.
+     * Útil para filtros de login e listagens públicas.
+     */
+    public boolean isAtivo() {
+        // Verifica se o status é nulo (fallback) ou explicitamente 'ATIVO'
+        return this.status == null || "ATIVO".equalsIgnoreCase(this.status);
     }
 }
