@@ -31,145 +31,7 @@
         <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="resources/css/blog.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        
-        <style>
-            /* Estilos Específicos da Revista */
-            .revista-hero {
-                text-align: center;
-                padding: 3rem 1rem;
-                color: white;
-                text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-                margin-bottom: 2rem;
-            }
-            
-            .card-revista {
-                border: none;
-                border-radius: 12px;
-                overflow: hidden;
-                background-color: #fff;
-                box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-                position: relative;
-            }
-            
-            .card-revista:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            }
-            
-            .card-img-wrapper {
-                height: 250px;
-                overflow: hidden;
-                position: relative;
-            }
-            
-            .card-img-wrapper img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                transition: transform 0.5s ease;
-            }
-            
-            .card-revista:hover .card-img-wrapper img {
-                transform: scale(1.05);
-            }
-            
-            .card-body {
-                padding: 1.5rem;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .meta-info {
-                font-size: 0.85rem;
-                color: #6c757d;
-                margin-bottom: 0.5rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-            }
-            
-            .article-title {
-                font-weight: 700;
-                color: #2c3e50;
-                margin-bottom: 1rem;
-                font-size: 1.5rem;
-            }
-            
-            .article-desc {
-                color: #555;
-                font-size: 0.95rem;
-                line-height: 1.6;
-                flex-grow: 1;
-            }
-            
-            .author-badge {
-                width: 35px;
-                height: 35px;
-                border-radius: 50%;
-                background-color: #e9ecef;
-                color: #0d6efd;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 0.9rem;
-            }
-            
-            .owner-actions {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                z-index: 10;
-                background: rgba(255,255,255,0.9);
-                border-radius: 8px;
-                padding: 5px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            }
-
-            .sidebar-revista {
-                position: fixed;
-                top: 0;
-                right: -450px;
-                width: 400px;
-                height: 100vh;
-                background: white;
-                z-index: 1050;
-                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-                transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-                overflow-y: auto;
-                padding: 2rem;
-            }
-            
-            .sidebar-revista.active {
-                right: 0;
-            }
-            
-            .overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0,0,0,0.5);
-                z-index: 1040;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-                backdrop-filter: blur(2px);
-            }
-            
-            .overlay.active {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            @media (min-width: 768px) {
-                .card-img-wrapper {
-                    height: 100%;
-                    min-height: 280px;
-                }
-            }
-        </style>
+        <link href="resources/css/revistaPost.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         
@@ -297,7 +159,7 @@
                                 </div>
                             <% } %>
 
-                            <div class="row g-0 align-items-center">
+                            <div class="row">
                                 <div class="col-md-5 col-lg-4">
                                     <div class="card-img-wrapper">
                                         <img src="MostrarImagemServlet?id=<%= artigo.getId() %>&tipo=revista" 

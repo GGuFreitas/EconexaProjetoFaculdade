@@ -57,7 +57,7 @@
                             <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
                             <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+                            <li class="nav-item"><a class="nav-link" href="revistaPost.jsp">Revista</a></li>
                             
                             <% if (usuario.isAdmin()) { %> 
                                 <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>

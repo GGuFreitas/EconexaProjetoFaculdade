@@ -65,7 +65,7 @@
                             <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
                             <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
+                            <li class="nav-item"><a class="nav-link" href="revistaPost.jsp">Revista</a></li>
                             
                             <% if (estaLogado && usuario.isAdmin()) { %>
                                 <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>
@@ -220,102 +220,106 @@
             <% } %>
         </div>
         
-        <div class="sidebar" id="sidebar-main">
-            <div class="form-novo-registro">
-                <h5 id="formTitle">Postar no Blog</h5>
-                
-                <form method="POST" action="SalvarPostServlet" id="formRegistro" enctype="multipart/form-data">
-                    <input type="hidden" name="origem" value="blog">
-                    <input type="hidden" name="id" id="inputId">
-
-                    <div class="mb-2">
-                        <label class="form-label">Título</label>
-                        <input type="text" class="form-control" name="titulo" id="inputTitulo" placeholder="Digite o título" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" id="inputDescricao" placeholder="Escreva seu post..." rows="4"></textarea>
-                    </div>
-                    
-                    <div class="mb-2" id="divFotoCapa">
-                        <label class="form-label">Foto de Capa</label>
-                        <input type="file" class="form-control" name="foto_capa" accept="image/*">
-                    </div>
-                    
-                    <div class="d-grid gap-2" style="margin-top: 20px;">
-                        <% if (estaLogado) { %>
-                            <button type="submit" class="btn btn-success" id="btnSubmit">Publicar Post</button>
-                            <button type="button" class="btn btn-secondary d-none" id="btnCancelar" onclick="resetarFormulario()">Cancelar Edição</button>
-                        <% } else { %>
-                            <a href="login.jsp" class="btn btn-secondary">Faça login para publicar</a>
-                        <% } %>
-                    </div>
-                </form>
+        <!-- NOVA SIDEBAR (Estilo Revista) -->
+        <div class="sidebar-right" id="sidebarBlog">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <h4 class="mb-0 fw-bold text-dark" id="sidebarTitle"><i class="fas fa-edit me-2 text-success"></i>Postar</h4>
+                <button type="button" class="btn-close" onclick="fecharSidebar()"></button>
             </div>
+            
+            <form method="POST" action="SalvarPostServlet" id="formRegistro" enctype="multipart/form-data">
+                <input type="hidden" name="origem" value="blog">
+                <input type="hidden" name="id" id="inputId">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Título</label>
+                    <input type="text" class="form-control form-control-lg" name="titulo" id="inputTitulo" required placeholder="Digite um título...">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Conteúdo</label>
+                    <textarea class="form-control" name="descricao" id="inputDescricao" rows="8" required placeholder="Escreva o conteúdo do seu post aqui..."></textarea>
+                </div>
+                
+                <!-- Div Foto (Será escondida na edição) -->
+                <div class="mb-4" id="divFotoCapa">
+                    <label class="form-label fw-bold">Imagem de Capa</label>
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="foto_capa" id="inputFoto" accept="image/png, image/jpeg">
+                        <label class="input-group-text" for="inputFoto"><i class="fas fa-upload"></i></label>
+                    </div>
+                    <div class="form-text">Recomendado: Imagens horizontais (JPG/PNG).</div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <% if (estaLogado) { %>
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold" id="btnSubmit">
+                            <i class="fas fa-paper-plane me-2"></i> Publicar Post
+                        </button>
+                    <% } else { %>
+                        <a href="login.jsp" class="btn btn-secondary btn-lg rounded-pill">Faça login para publicar</a>
+                    <% } %>
+                </div>
+            </form>
         </div>
         
-        <button class="btn-flutuante" id="btnNovoRegistro" title="Novo Registro" onclick="focarNoFormulario()">
-            Postar
+        <!-- Botão Flutuante -->
+        <button class="btn-flutuante" id="btnNovoRegistro" onclick="prepararNovoPost()">
+            <i class="fas fa-plus me-2"></i>Postar
         </button>
+        
+        <!-- Overlay -->
+        <div class="overlay" id="overlay" onclick="fecharSidebar()"></div>
+        
         
         <script src="resources/js/bootstrap.js"></script>
         <script>
-             function focarNoFormulario() {
-                const sidebar = document.getElementById("sidebar-main");
-                const button = document.getElementById("btnNovoRegistro");
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebarBlog');
+                const overlay = document.getElementById('overlay');
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+            }
+            
+            function fecharSidebar() {
+                const sidebar = document.getElementById('sidebarBlog');
+                const overlay = document.getElementById('overlay');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function prepararNovoPost() {
+                document.getElementById("formRegistro").reset();
+                document.getElementById("inputId").value = "";
                 
-                if (sidebar.classList.contains('is-visible')) {
-                    sidebar.classList.remove('is-visible');
-                } else {
-                    if (document.getElementById("inputId").value !== "") {
-                        resetarFormulario();
-                    }
-                    sidebar.classList.add('is-visible');
-                }
+                // Garante que o campo de foto apareça
+                document.getElementById("divFotoCapa").classList.remove("d-none");
                 
-                if (sidebar.classList.contains('is-visible')) {
-                    button.textContent = 'Fechar';
-                } else {
-                    button.textContent = 'Postar';
-                }
+                document.getElementById("sidebarTitle").innerHTML = '<i class="fas fa-edit me-2 text-success"></i>Novo Post';
+                document.getElementById("btnSubmit").innerHTML = '<i class="fas fa-paper-plane me-2"></i> Publicar Post';
+                document.getElementById("btnSubmit").classList.replace("btn-primary", "btn-success");
+                
+                toggleSidebar();
             }
 
             function prepararEdicao(id, titulo, descricao) {
-                var sidebar = document.getElementById("sidebar-main");
-                sidebar.classList.add('is-visible');
-                
                 document.getElementById("inputId").value = id;
                 document.getElementById("inputTitulo").value = titulo;
                 document.getElementById("inputDescricao").value = descricao;
                 
+                // ESCONDE foto na edição (regra solicitada)
                 document.getElementById("divFotoCapa").classList.add("d-none");
                 
-                document.getElementById("btnNovoRegistro").textContent = 'Fechar';
-
-                document.getElementById("formTitle").innerText = "Editar Post";
-                document.getElementById("btnSubmit").innerText = "Salvar Alterações";
-                document.getElementById("btnSubmit").classList.remove("btn-success");
-                document.getElementById("btnSubmit").classList.add("btn-primary");
+                document.getElementById("sidebarTitle").innerHTML = '<i class="fas fa-pencil-alt me-2 text-primary"></i>Editar Post';
+                document.getElementById("btnSubmit").innerHTML = '<i class="fas fa-save me-2"></i> Salvar Alterações';
+                document.getElementById("btnSubmit").classList.replace("btn-success", "btn-primary");
                 
-                document.getElementById("btnCancelar").classList.remove("d-none");
-                
-                window.scrollTo(0, 0);
+                toggleSidebar();
             }
 
-            function resetarFormulario() {
-                document.getElementById("formRegistro").reset();
-                document.getElementById("inputId").value = ""; 
-                
-                document.getElementById("divFotoCapa").classList.remove("d-none");
-                
-                document.getElementById("formTitle").innerText = "Postar no Blog";
-                document.getElementById("btnSubmit").innerText = "Publicar Post";
-                document.getElementById("btnSubmit").classList.remove("btn-primary");
-                document.getElementById("btnSubmit").classList.add("btn-success");
-                
-                document.getElementById("btnCancelar").classList.add("d-none");
-            }
-
+            // Função AJAX para interagir
             function interagirPost(btnElement, postId, tipo) {
                 <% if (!estaLogado) { %>
                     alert("Faça login para interagir!");
@@ -327,36 +331,19 @@
                 
                 if (tipo === 'like') {
                     var countSpan = btnElement.querySelector('.like-count');
-                    var currentCount = parseInt(countSpan.innerText);
-                    if (isAdding) {
-                        countSpan.innerText = currentCount + 1;
-                    } else {
-                        countSpan.innerText = Math.max(0, currentCount - 1);
+                    if(countSpan) {
+                        var currentCount = parseInt(countSpan.innerText);
+                        countSpan.innerText = isAdding ? currentCount + 1 : Math.max(0, currentCount - 1);
                     }
                 }
 
                 fetch('InteracaoServlet', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: 'postId=' + postId + '&tipo=' + tipo
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        btnElement.classList.toggle('active');
-                        if (tipo === 'like') {
-                            var countSpan = btnElement.querySelector('.like-count');
-                            var currentCount = parseInt(countSpan.innerText);
-                            countSpan.innerText = isAdding ? currentCount - 1 : currentCount + 1;
-                        }
-                        alert("Erro ao processar ação.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    btnElement.classList.toggle('active');
-                });
+                .then(response => { if (!response.ok) { btnElement.classList.toggle('active'); alert("Erro."); } })
+                .catch(error => { btnElement.classList.toggle('active'); });
             }
         </script>
         
