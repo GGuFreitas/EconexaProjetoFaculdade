@@ -20,7 +20,6 @@ import org.mindrot.jbcrypt.BCrypt;
  *
  * @author Enzo Reis
  */
-
 @WebServlet(name = "LoginServlet", urlPatterns = {"/LoginServlet"})
 public class LoginServlet extends HttpServlet {
 
@@ -34,7 +33,9 @@ public class LoginServlet extends HttpServlet {
         
         try {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
-            Usuario usuario = usuarioDAO.buscarPorEmail(email);
+            
+            // Usando método que filtra por status ATIVO
+            Usuario usuario = usuarioDAO.buscarAtivoPorEmail(email);
             
             if (usuario != null && BCrypt.checkpw(senha, usuario.getSenhaHash())) {
                 // Login bem-sucedido
@@ -49,7 +50,7 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("mapa.jsp");
                 }
             } else {
-                // Credenciais inválidas
+                // Credenciais inválidas ou usuário INATIVO
                 response.sendRedirect("login.jsp?erro=" + URLEncoder.encode("Email ou senha inválidos", "UTF-8"));
             }
             

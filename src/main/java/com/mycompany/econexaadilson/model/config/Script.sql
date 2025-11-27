@@ -1,22 +1,28 @@
-/* * Author:  gufre, jhonny
- * Created: 20 de out. de 2025
+/*
+ * Script SQL para criação e populamento do banco de dados ECONEXA.
+ * Atualizado: 27 de Novembro de 2025 (Inclusão de Status na tabela usuarios)
  */
 
+-- Define o banco de dados
 CREATE DATABASE IF NOT EXISTS econexa
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE econexa;
 
+-- TABELA USUARIOS
 CREATE TABLE IF NOT EXISTS usuarios (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     senha_hash VARCHAR(255) NOT NULL,
     perfil ENUM('MEMBRO', 'ADMIN') DEFAULT 'MEMBRO',
+    -- NOVO CAMPO: Status do usuário para exclusão lógica
+    status ENUM('ATIVO', 'INATIVO') NOT NULL DEFAULT 'ATIVO',
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- TABELA TIPO_REGISTRO
 CREATE TABLE IF NOT EXISTS tipo_registro (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -26,6 +32,7 @@ CREATE TABLE IF NOT EXISTS tipo_registro (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- TABELA REGISTRO
 CREATE TABLE IF NOT EXISTS registro (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(200) NOT NULL,
@@ -40,9 +47,10 @@ CREATE TABLE IF NOT EXISTS registro (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (tipo_registro_id) REFERENCES tipo_registro(id) ON DELETE RESTRICT,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE -- NOVO: FK para usuário
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE 
 );
 
+-- TABELA BLOG_POST
 CREATE TABLE IF NOT EXISTS blog_post (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(200) NOT NULL,
@@ -58,11 +66,8 @@ CREATE TABLE IF NOT EXISTS blog_post (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
     FOREIGN KEY (registro_id) REFERENCES registro(id) ON DELETE SET NULL
 );
--- senha = admin123
- INSERT INTO usuarios (nome, email, senha_hash, perfil) VALUES
-('Admin', 'admin@econexa.com', '$2a$10$AjSLurEZm7CDNM9/98/4KOqwTbUTMTg8JIbcEPtbtqFIljkVfOHwK', 'ADMIN');
 
-
+-- TABELA REVISTA_POST
 CREATE TABLE IF NOT EXISTS revista_post (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(200) NOT NULL,
@@ -75,6 +80,7 @@ CREATE TABLE IF NOT EXISTS revista_post (
     autor VARCHAR(200) NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id));
 
+-- TABELA LOG
 CREATE TABLE IF NOT EXISTS Log (
     id_log BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome_tabela VARCHAR(100) NOT NULL,
@@ -86,7 +92,7 @@ CREATE TABLE IF NOT EXISTS Log (
     dados_novos TEXT
 );
 
-
+-- TABELA POST_CURTIDAS
 CREATE TABLE IF NOT EXISTS post_curtidas (
     usuario_id BIGINT NOT NULL,
     post_id BIGINT NOT NULL,
@@ -96,6 +102,7 @@ CREATE TABLE IF NOT EXISTS post_curtidas (
     FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
 );
 
+-- TABELA POST_SALVOS
 CREATE TABLE IF NOT EXISTS post_salvos (
     usuario_id BIGINT NOT NULL,
     post_id BIGINT NOT NULL,
@@ -104,6 +111,16 @@ CREATE TABLE IF NOT EXISTS post_salvos (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
 );
+
+
+-- =========================================================================
+-- INSERÇÃO DE DADOS INICIAIS
+-- =========================================================================
+
+-- Senha = admin123 (Hash BCrypt para o Admin)
+INSERT INTO usuarios (nome, email, senha_hash, perfil, status) VALUES
+('Admin', 'admin@econexa.com', '$2a$10$AjSLurEZm7CDNM9/98/4KOqwTbUTMTg8JIbcEPtbtqFIljkVfOHwK', 'ADMIN', 'ATIVO');
+
 
 INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES
 ('Problema na Via', 'NEGATIVO', 'Buracos, asfalto ruim, calçadas quebradas, obstruções', 'fa-road'),
@@ -141,7 +158,7 @@ INSERT INTO registro (titulo, descricao, data, latitude, longitude, status, tipo
 ('Árvore em risco na Vila Oliveira', 'Árvore grande com galhos quebrando na R. Pres. Campos Sales', CURRENT_TIMESTAMP, -23.508, -46.185, 'PENDENTE', 5, 1),
 ('Movimento no Mercadão', 'Mercado Municipal com grande variedade de produtos locais', CURRENT_TIMESTAMP, -23.522, -46.187, 'PENDENTE', 18, 1);
 
--- 4. Por último blog_post (que depende de registro)
+-- Inserção de um post de blog (que depende de registro)
 INSERT INTO blog_post (titulo, descricao, foto_capa, status_publicacao, usuario_id, registro_id)
 SELECT 
     'Resolvido o buraco da Avenida Principal!',
@@ -153,8 +170,14 @@ SELECT
 FROM registro
 WHERE id = 1;
 
--- Triggers
--- Trigger para UPDATE em usuarios
+
+-- =========================================================================
+-- TRIGGERS PARA AUDITORIA (LOG)
+-- =========================================================================
+
+-- -------------------------------------------------------------------------
+-- TRIGGERS DA TABELA USUARIOS (COM STATUS)
+-- -------------------------------------------------------------------------
 DELIMITER $$
 CREATE TRIGGER trg_log_usuarios_update 
 AFTER UPDATE ON usuarios
@@ -165,13 +188,14 @@ BEGIN
            OLD.id,
            'UPDATE', 
            USER(), 
-           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil),
-           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil)
-          );
+           -- Dados Antigos: Inclui o status anterior
+           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil, ' | Status: ', OLD.status),
+           -- Dados Novos: Inclui o novo status (se for INATIVO, essa é a ação de exclusão lógica)
+           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil, ' | Status: ', NEW.status)
+         );
 END$$
 DELIMITER ;
 
--- Trigger para INSERT em usuarios
 DELIMITER $$
 CREATE TRIGGER trg_log_usuarios_insert 
 AFTER INSERT ON usuarios
@@ -183,12 +207,13 @@ BEGIN
            'INSERT', 
            USER(), 
            NULL,
-           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil)
-          );
+           -- Dados Novos: Inclui o status (sempre ATIVO no insert)
+           CONCAT('Nome: ', NEW.nome, ' | Email: ', NEW.email, ' | Perfil: ', NEW.perfil, ' | Status: ', NEW.status)
+         );
 END$$
 DELIMITER ;
 
--- Trigger para DELETE em usuarios
+-- Mantido o Trigger de DELETE, embora não optarei pela exclusão física
 DELIMITER $$
 CREATE TRIGGER trg_log_usuarios_delete 
 AFTER DELETE ON usuarios
@@ -199,14 +224,18 @@ BEGIN
            OLD.id,
            'DELETE', 
            USER(), 
-           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil),
+           -- Dados Antigos: Inclui o status antes da exclusão
+           CONCAT('Nome: ', OLD.nome, ' | Email: ', OLD.email, ' | Perfil: ', OLD.perfil, ' | Status: ', OLD.status),
            NULL
-          );
+         );
 END$$
 DELIMITER ;
 
+-- -------------------------------------------------------------------------
+-- TRIGGERS DAS OUTRAS TABELAS
+-- -------------------------------------------------------------------------
+
 -- Tipo_registro
--- Trigger para UPDATE em tipo_registro
 DELIMITER $$
 CREATE TRIGGER trg_log_tipo_registro_update 
 AFTER UPDATE ON tipo_registro
@@ -219,11 +248,10 @@ BEGIN
            USER(), 
            CONCAT('Nome: ', OLD.nome, ' | Categoria: ', OLD.categoria),
            CONCAT('Nome: ', NEW.nome, ' | Categoria: ', NEW.categoria)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para INSERT em tipo_registro
 DELIMITER $$
 CREATE TRIGGER trg_log_tipo_registro_insert 
 AFTER INSERT ON tipo_registro
@@ -236,11 +264,10 @@ BEGIN
            USER(), 
            NULL,
            CONCAT('Nome: ', NEW.nome, ' | Categoria: ', NEW.categoria)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para DELETE em tipo_registro
 DELIMITER $$
 CREATE TRIGGER trg_log_tipo_registro_delete 
 AFTER DELETE ON tipo_registro
@@ -253,14 +280,12 @@ BEGIN
            USER(), 
            CONCAT('Nome: ', OLD.nome, ' | Categoria: ', OLD.categoria),
            NULL
-          );
+         );
 END$$
 DELIMITER ;
 
 
-
-
--- Trigger para UPDATE em registro
+-- Registro
 DELIMITER $$
 CREATE TRIGGER trg_log_registro_update 
 AFTER UPDATE ON registro
@@ -273,13 +298,10 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status, ' | Tipo: ', OLD.tipo_registro_id),
            CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status, ' | Tipo: ', NEW.tipo_registro_id)
-          );
+         );
 END$$
 DELIMITER ;
 
-
---Registro Trigger
--- Trigger para INSERT em registro
 DELIMITER $$
 CREATE TRIGGER trg_log_registro_insert 
 AFTER INSERT ON registro
@@ -292,11 +314,10 @@ BEGIN
            USER(), 
            NULL,
            CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status, ' | Tipo: ', NEW.tipo_registro_id, ' | Usuário: ', NEW.usuario_id)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para DELETE em registro
 DELIMITER $$
 CREATE TRIGGER trg_log_registro_delete 
 AFTER DELETE ON registro
@@ -309,13 +330,12 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status, ' | Tipo: ', OLD.tipo_registro_id),
            NULL
-          );
+         );
 END$$
 DELIMITER ;
 
 
---blog
--- Trigger para UPDATE em blog_post
+-- blog_post
 DELIMITER $$
 CREATE TRIGGER trg_log_blog_post_update 
 AFTER UPDATE ON blog_post
@@ -328,11 +348,10 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status_publicacao),
            CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status_publicacao)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para INSERT em blog_post
 DELIMITER $$
 CREATE TRIGGER trg_log_blog_post_insert 
 AFTER INSERT ON blog_post
@@ -345,11 +364,10 @@ BEGIN
            USER(), 
            NULL,
            CONCAT('Título: ', NEW.titulo, ' | Status: ', NEW.status_publicacao, ' | Usuário: ', NEW.usuario_id)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para DELETE em blog_post
 DELIMITER $$
 CREATE TRIGGER trg_log_blog_post_delete 
 AFTER DELETE ON blog_post
@@ -362,12 +380,12 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Status: ', OLD.status_publicacao),
            NULL
-          );
+         );
 END$$
 DELIMITER ;
 
---Revista
--- Trigger para UPDATE em revista_post
+
+-- revista_post
 DELIMITER $$
 CREATE TRIGGER trg_log_revista_post_update 
 AFTER UPDATE ON revista_post
@@ -380,11 +398,10 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Autor: ', OLD.autor),
            CONCAT('Título: ', NEW.titulo, ' | Autor: ', NEW.autor)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para INSERT em revista_post
 DELIMITER $$
 CREATE TRIGGER trg_log_revista_post_insert 
 AFTER INSERT ON revista_post
@@ -397,11 +414,10 @@ BEGIN
            USER(), 
            NULL,
            CONCAT('Título: ', NEW.titulo, ' | Autor: ', NEW.autor, ' | Usuário: ', NEW.usuario_id)
-          );
+         );
 END$$
 DELIMITER ;
 
--- Trigger para DELETE em revista_post
 DELIMITER $$
 CREATE TRIGGER trg_log_revista_post_delete 
 AFTER DELETE ON revista_post
@@ -414,6 +430,6 @@ BEGIN
            USER(), 
            CONCAT('Título: ', OLD.titulo, ' | Autor: ', OLD.autor),
            NULL
-          );
+         );
 END$$
 DELIMITER ;

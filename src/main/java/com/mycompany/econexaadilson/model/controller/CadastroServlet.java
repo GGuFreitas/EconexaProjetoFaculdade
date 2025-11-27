@@ -18,9 +18,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 /**
  *
- * @author Enzo Reis
+ * @author
  */
-
 @WebServlet(name = "CadastroServlet", urlPatterns = {"/CadastroServlet"})
 public class CadastroServlet extends HttpServlet {
 
@@ -48,8 +47,8 @@ public class CadastroServlet extends HttpServlet {
             
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             
-            // Verificar se email já existe
-            if (usuarioDAO.buscarPorEmail(email) != null) {
+            // (Nota: Se o email existir mas estiver INATIVO, o banco barrará no insert)
+            if (usuarioDAO.buscarAtivoPorEmail(email) != null) {
                 response.sendRedirect("cadastro.jsp?erro=" + URLEncoder.encode("Email já cadastrado", "UTF-8"));
                 return;
             }
@@ -60,12 +59,13 @@ public class CadastroServlet extends HttpServlet {
             novoUsuario.setEmail(email);
             novoUsuario.setSenhaHash(BCrypt.hashpw(senha, BCrypt.gensalt()));
             novoUsuario.setPerfil("MEMBRO"); // Padrão é MEMBRO
+            novoUsuario.setStatus("ATIVO");  // Define explicitamente como ATIVO
             novoUsuario.setDataCriacao(new Date());
             
             if (usuarioDAO.inserir(novoUsuario)) {
                 response.sendRedirect("login.jsp?sucesso=" + URLEncoder.encode("Conta criada com sucesso! Faça login.", "UTF-8"));
             } else {
-                response.sendRedirect("cadastro.jsp?erro=" + URLEncoder.encode("Erro ao criar conta", "UTF-8"));
+                response.sendRedirect("cadastro.jsp?erro=" + URLEncoder.encode("Erro ao criar conta. O e-mail pode já estar em uso.", "UTF-8"));
             }
             
         } catch (Exception e) {

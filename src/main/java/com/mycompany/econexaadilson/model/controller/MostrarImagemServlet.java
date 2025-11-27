@@ -2,6 +2,7 @@ package com.mycompany.econexaadilson.model.controller;
 
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
 import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
+import com.mycompany.econexaadilson.model.DAO.RevistaPostDAO;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.ServletException;
@@ -31,7 +32,11 @@ public class MostrarImagemServlet extends HttpServlet {
             if ("registro".equals(tipo)) {
                 RegistroDAO registroDao = new RegistroDAO();
                 imgBytes = registroDao.getImagemById(id);
+            } else if ("revista".equals(tipo)) { // Bloco para revista
+                RevistaPostDAO revistaDao = new RevistaPostDAO();
+                imgBytes = revistaDao.getImagemById(id);
             } else {
+                // Mantém o Blog como padrão (fallback) para compatibilidade com o resto do sistema
                 BlogDAO blogDao = new BlogDAO();
                 imgBytes = blogDao.getImagemById(id);
             }
