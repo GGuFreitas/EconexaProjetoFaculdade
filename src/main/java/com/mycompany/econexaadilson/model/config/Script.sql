@@ -17,25 +17,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE IF NOT EXISTS post_curtidas (
-    usuario_id BIGINT NOT NULL,
-    post_id BIGINT NOT NULL,
-    data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (usuario_id, post_id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS post_salvos (
-    usuario_id BIGINT NOT NULL,
-    post_id BIGINT NOT NULL,
-    data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (usuario_id, post_id),
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS tipo_registro (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -103,6 +84,25 @@ CREATE TABLE IF NOT EXISTS Log (
     usuario VARCHAR(100),
     dados_antigos TEXT,
     dados_novos TEXT
+);
+
+
+CREATE TABLE IF NOT EXISTS post_curtidas (
+    usuario_id BIGINT NOT NULL,
+    post_id BIGINT NOT NULL,
+    data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, post_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS post_salvos (
+    usuario_id BIGINT NOT NULL,
+    post_id BIGINT NOT NULL,
+    data_interacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (usuario_id, post_id),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES blog_post(id) ON DELETE CASCADE
 );
 
 INSERT INTO tipo_registro (nome, categoria, descricao, icone) VALUES

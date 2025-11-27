@@ -11,7 +11,7 @@ body {
     margin: 0;
     padding: 0;
     padding-top: 80px;
-    background: url("../img/background-index-blur.png") center/cover no-repeat;
+    background: url("../img/background-index-dark.png") center/cover no-repeat;
     background-attachment: fixed;
     animation: fadeInPage 1s ease-out;
     font-family: 'Segoe UI', system-ui, sans-serif;
