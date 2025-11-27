@@ -1,4 +1,5 @@
 <%-- 
+    Document   : Blog
     Author     : jhonny
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -12,7 +13,7 @@
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
     
     boolean estaLogado = (usuario != null);
-    Long userId = estaLogado ? usuario.getId() : null; // ID para verificar likes
+    Long userId = estaLogado ? usuario.getId() : null; 
     
     String nomeExibicao = "Convidado";
     String emailExibicao = "";
@@ -38,6 +39,7 @@
         <link href="resources/css/style-bootstrap.css" rel="stylesheet" type="text/css"/>
         <link href="resources/css/blog.css" rel="stylesheet" type="text/css"/>
         <style>
+            /* Estilos auxiliares para os ícones */
             .action-btn.active .icon-heart { fill: #e74c3c; stroke: #e74c3c; }
             .action-btn.active .icon-bookmark { fill: #f1c40f; stroke: #f1c40f; }
             .icon-heart, .icon-bookmark, .icon-comment { fill: none; stroke: white; stroke-width: 2; }
@@ -124,25 +126,45 @@
 
             <!-- Alertas -->
             <% if (sucesso != null) { %>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <%= sucesso %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <div class="alert alert-success"><%= sucesso %></div>
             <% } %>
             <% if (erro != null) { %>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <%= erro %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <div class="alert alert-danger"><%= erro %></div>
             <% } %>
             
-            <!-- Lista de Posts -->
-            <% for(Blog post : posts) { %>
+            <% for(Blog post : posts) { 
+                // Verifica se o usuário logado é dono do post para mostrar botão de edição
+                boolean isDono = estaLogado && usuario.getId().equals(post.getUsuarioId());
+            %>
                 <div class="registro-item">
                     <section class="conteudo-grid" id="grid-conteudo">
                         <div class="grid">
                             <div class="conteudo">
-                                <strong><%= post.getTitulo() %></strong>
+                                <% if (isDono) { %>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-primary" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
+                                                    onclick="prepararEdicao(<%= post.getId() %>, '<%= post.getTitulo().replace("'", "\\'") %>', '<%= post.getDescricao().replace("'", "\\'").replace("\n", " ") %>')"
+                                                    title="Editar">
+                                                <!-- Ícone Lápis -->
+                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                            </button>
+                                            
+                                            <a href="SalvarPostServlet?acao=excluir&id=<%= post.getId() %>&origem=blog" 
+                                               class="btn btn-sm btn-outline-danger" 
+                                               style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                               onclick="return confirm('Tem certeza que deseja excluir este post?')"
+                                               title="Excluir">
+                                                <!-- Ícone Lixeira -->
+                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                            </a>
+                                        </div>
+                                    <% } %>
+                                <div>
+                                    <strong><%= post.getTitulo() %></strong>
+                                    
+                                    
+                                </div>
+                                
                                 <div class="texto-registro">
                                      <span class="registro-autor">
                                          Por: <%= post.getNomeAutor() %>
@@ -170,7 +192,7 @@
                     </section>
                     
                     <div class="post-actions">
-                        <!-- Botão Curtir -->
+                        
                         <button class="action-btn <%= post.isCurtidoPeloUsuario() ? "active" : "" %>" 
                                 onclick="interagirPost(this, <%= post.getId() %>, 'like')"
                                 title="Curtir">
@@ -178,6 +200,12 @@
                                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                             </svg>
                             <span class="like-count"><%= post.getTotalCurtidas() %></span>
+                        </button>
+                        
+                        <button class="action-btn" title="Comentar">
+                            <svg viewBox="0 0 24 24" class="icon-comment">
+                                <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                            </svg>
                         </button>
                         
                         <button class="action-btn <%= post.isSalvoPeloUsuario() ? "active" : "" %>"
@@ -193,36 +221,34 @@
             <% } %>
         </div>
         
-        <!-- Sidebar -->
         <div class="sidebar" id="sidebar-main">
             <div class="form-novo-registro">
-                <h5>Postar no Blog</h5>
+                <h5 id="formTitle">Postar no Blog</h5>
                 
                 <form method="POST" action="SalvarPostServlet" id="formRegistro" enctype="multipart/form-data">
-                    
+                    <input type="hidden" name="origem" value="blog">
+                    <input type="hidden" name="id" id="inputId">
+
                     <div class="mb-2">
                         <label class="form-label">Título</label>
-                        <input type="text" class="form-control" name="titulo" placeholder="Digite o título" required>
+                        <input type="text" class="form-control" name="titulo" id="inputTitulo" placeholder="Digite o título" required>
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" placeholder="Escreva seu post..." rows="4"></textarea>
+                        <textarea class="form-control" name="descricao" id="inputDescricao" placeholder="Escreva seu post..." rows="4"></textarea>
                     </div>
                     
-                    <div class="mb-2">
+                    <div class="mb-2" id="divFotoCapa">
                         <label class="form-label">Foto de Capa</label>
                         <input type="file" class="form-control" name="foto_capa" accept="image/*">
                     </div>
                     
                     <div class="d-grid gap-2" style="margin-top: 20px;">
                         <% if (estaLogado) { %>
-                            <button type="submit" class="btn btn-success">
-                                Publicar Post
-                            </button>
+                            <button type="submit" class="btn btn-success" id="btnSubmit">Publicar Post</button>
+                            <button type="button" class="btn btn-secondary d-none" id="btnCancelar" onclick="resetarFormulario()">Cancelar Edição</button>
                         <% } else { %>
-                            <a href="login.jsp" class="btn btn-secondary">
-                                Faça login para publicar
-                            </a>
+                            <a href="login.jsp" class="btn btn-secondary">Faça login para publicar</a>
                         <% } %>
                     </div>
                 </form>
@@ -239,13 +265,56 @@
                 const sidebar = document.getElementById("sidebar-main");
                 const button = document.getElementById("btnNovoRegistro");
                 
-                if (button.textContent === 'Fechar') {
-                    button.textContent = 'Postar';
+                if (sidebar.classList.contains('is-visible')) {
+                    sidebar.classList.remove('is-visible');
                 } else {
-                    button.textContent = 'Fechar';
+                    if (document.getElementById("inputId").value !== "") {
+                        resetarFormulario();
+                    }
+                    sidebar.classList.add('is-visible');
                 }
                 
-                sidebar.classList.toggle('is-visible');
+                if (sidebar.classList.contains('is-visible')) {
+                    button.textContent = 'Fechar';
+                } else {
+                    button.textContent = 'Postar';
+                }
+            }
+
+            function prepararEdicao(id, titulo, descricao) {
+                var sidebar = document.getElementById("sidebar-main");
+                sidebar.classList.add('is-visible');
+                
+                document.getElementById("inputId").value = id;
+                document.getElementById("inputTitulo").value = titulo;
+                document.getElementById("inputDescricao").value = descricao;
+                
+                document.getElementById("divFotoCapa").classList.add("d-none");
+                
+                document.getElementById("btnNovoRegistro").textContent = 'Fechar';
+
+                document.getElementById("formTitle").innerText = "Editar Post";
+                document.getElementById("btnSubmit").innerText = "Salvar Alterações";
+                document.getElementById("btnSubmit").classList.remove("btn-success");
+                document.getElementById("btnSubmit").classList.add("btn-primary");
+                
+                document.getElementById("btnCancelar").classList.remove("d-none");
+                
+                window.scrollTo(0, 0);
+            }
+
+            function resetarFormulario() {
+                document.getElementById("formRegistro").reset();
+                document.getElementById("inputId").value = ""; 
+                
+                document.getElementById("divFotoCapa").classList.remove("d-none");
+                
+                document.getElementById("formTitle").innerText = "Postar no Blog";
+                document.getElementById("btnSubmit").innerText = "Publicar Post";
+                document.getElementById("btnSubmit").classList.remove("btn-primary");
+                document.getElementById("btnSubmit").classList.add("btn-success");
+                
+                document.getElementById("btnCancelar").classList.add("d-none");
             }
 
             function interagirPost(btnElement, postId, tipo) {
@@ -270,7 +339,7 @@
                 fetch('InteracaoServlet', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
                     body: 'postId=' + postId + '&tipo=' + tipo
                 })
@@ -282,7 +351,7 @@
                             var currentCount = parseInt(countSpan.innerText);
                             countSpan.innerText = isAdding ? currentCount - 1 : currentCount + 1;
                         }
-                        alert("Erro ao processar ação. Tente novamente.");
+                        alert("Erro ao processar ação.");
                     }
                 })
                 .catch(error => {
