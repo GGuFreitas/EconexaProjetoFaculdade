@@ -95,31 +95,36 @@ public class SalvarRegistroServlet extends HttpServlet {
             if ("inserir".equals(acao)) {
                 registro.setData(new Date());
                 registro.setUsuario(usuario);
-                
+
                 Long novoId = registroDAO.inserir(registro);
                 sucesso = (novoId != null);
 
                 if (sucesso) {
                     message = "Registro criado com sucesso!";
-                    
+
                     String criarPost = request.getParameter("criarPost");
-                    
-                    if (criarPost != null && criarPost.equals("on")) {
+
+                    /*if (criarPost != null && criarPost.equals("on")) {
                         Blog post = new Blog();
                         post.setTitulo("Relato: " + registro.getTitulo());
                         post.setDescricao(registro.getDescricao());
                         post.setUsuarioId(usuario.getId());
-                        post.setRegistroId(novoId);
+                        post.setRegistroId(novoId); // 
                         post.setStatusPublicacao("PUBLICADO");
                         post.setDataPublicacao(new Date());
-                        
+
                         if (imagemBytes != null) {
                             post.setFotoCapaStream(new ByteArrayInputStream(imagemBytes));
                         }
-                        
-                        new BlogDAO().inserir(post);
-                        message += " E postado no Blog!";
-                    }
+
+                        boolean postCriado = new BlogDAO().inserir(post);
+                        if (postCriado) {
+                            message += " E postado no Blog!";
+                        } else {
+                            message += " (Erro ao criar post no blog)";
+                        }
+                    }*/
+                    
                 }
             } else {
                 // Atualização
