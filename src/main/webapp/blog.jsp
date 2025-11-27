@@ -264,9 +264,13 @@
         </div>
         
         <!-- Botão Flutuante -->
-        <button class="btn-flutuante" id="btnNovoRegistro" onclick="prepararNovoPost()">
+        
+        <% if (estaLogado) { %>
+                    <button class="btn-flutuante" id="btnNovoRegistro" onclick="prepararNovoPost()">
             <i class="fas fa-plus me-2"></i>Postar
         </button>
+                <% } %>
+        
         
         <!-- Overlay -->
         <div class="overlay" id="overlay" onclick="fecharSidebar()"></div>
