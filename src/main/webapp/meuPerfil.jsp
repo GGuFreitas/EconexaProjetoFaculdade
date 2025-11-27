@@ -1,7 +1,6 @@
 <%-- 
     Document   : meuPerfil
-    Updated    : Abas + Edição (Sem Foto) + Exclusão + Interação
-    Author     : gufre / jhonny
+    Author     : jhonny, enzo
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.mycompany.econexaadilson.model.DAO.BlogDAO"%>
@@ -13,6 +12,7 @@
 
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+    
     if (usuario == null) {
         response.sendRedirect("login.jsp");
         return;
@@ -45,7 +45,7 @@
         
         <header class="main-header">
              <nav class="navbar navbar-expand-md navbar-light bg-transparent main-header">
-                <div class="container-fluid">
+                 <div class="container-fluid">
                     <a class="navbar-brand" href="#">
                         <img src="resources/img/mini-logo.png" alt="ECONEXA" class="navbar-logo">
                     </a>
@@ -58,11 +58,13 @@
                             <li class="nav-item"><a class="nav-link" href="mapa.jsp">Mapa</a></li>
                             <li class="nav-item"><a class="nav-link" href="blog.jsp">Blog</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Revista</a></li>
-                            <% if (usuario.isAdmin()) { %>
+                            
+                            <% if (usuario.isAdmin()) { %> 
                                 <li class="nav-item"><a class="nav-link" href="admin.jsp">Admin</a></li>
                             <% } %>
+                            
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <%= nomeExibicao %>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -98,21 +100,26 @@
 
         <div class="lista-registros">
             
-            <!-- Alertas -->
-            <% if (sucesso != null) { %> <div class="alert alert-success"><%= sucesso %></div> <% } %>
-            <% if (erro != null) { %> <div class="alert alert-danger"><%= erro %></div> <% } %>
+            <% if (sucesso != null) { %> 
+                <div class="alert alert-success mt-3"><%= sucesso %></div> 
+            <% } %>
+            <% if (erro != null) { %> 
+                <div class="alert alert-danger mt-3"><%= erro %></div> 
+            <% } %>
             
             <div class="profile-tabs">
                 <button class="tab-btn active" id="btn-meus" onclick="openTab('meus', this)">MINHAS PUBLICAÇÕES</button>
                 <button class="tab-btn" id="btn-curtidos" onclick="openTab('curtidos', this)">CURTIDOS</button>
                 <button class="tab-btn" id="btn-salvos" onclick="openTab('salvos', this)">SALVOS</button>
+                
+                <button class="tab-btn" id="btn-edicao" onclick="openTab('edicao', this)">EDITAR PERFIL</button>
             </div>
 
             <div id="meus" class="tab-content active">
                 <% if (meusPosts.isEmpty()) { %>
-                     <div class="text-center mt-4" style="color: #888;">
+                    <div class="text-center mt-4" style="color: #888;">
                         <p>Você ainda não publicou nada.</p>
-                     </div>
+                    </div>
                 <% } %>
                 
                 <% for(Blog post : meusPosts) { %>
@@ -121,24 +128,20 @@
                             <div class="grid">
                                 <div class="conteudo">
                                     <div class="d-flex gap-2">
-                                            <!-- Botão Editar -->
-                                            <button class="btn btn-dark" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
-                                                    onclick="prepararEdicao(<%= post.getId() %>, '<%= post.getTitulo().replace("'", "\\'") %>', '<%= post.getDescricao().replace("'", "\\'").replace("\n", " ") %>')"
-                                                    title="Editar">
-                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                            </button>
-                                            <!-- Botão Excluir -->
-                                            <a href="SalvarPostServlet?acao=excluir&id=<%= post.getId() %>&origem=perfil" 
-                                               class="btn btn-danger" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
-                                               onclick="return confirm('Tem certeza que deseja excluir?')" title="Excluir">
-                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                                            </a>
-                                        </div>
+                                        <button class="btn btn-dark" style="border-radius: 50%; width: 32px; height: 32px; padding: 0;" 
+                                                onclick="prepararEdicao(<%= post.getId() %>, '<%= post.getTitulo().replace("'", "\\'") %>', '<%= post.getDescricao().replace("'", "\\'").replace("\n", " ") %>')"
+                                                title="Editar">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        </button>
+                                        <a href="SalvarPostServlet?acao=excluir&id=<%= post.getId() %>&origem=perfil" 
+                                           class="btn btn-danger" style="border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                                           onclick="return confirm('Tem certeza que deseja excluir?')" title="Excluir">
+                                            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                        </a>
+                                    </div>
                                     <div >
                                         <strong><%= post.getTitulo() %></strong>
-                                        
                                     </div>
-
                                     <div class="texto-registro">
                                         <span class="registro-autor">Status: <span class="badge bg-<%= "PUBLICADO".equals(post.getStatusPublicacao()) ? "success" : "warning" %>"><%= post.getStatusPublicacao() %></span></span>
                                     </div>
@@ -175,10 +178,10 @@
                              </div>
                          </section>
                          <div class="post-actions">
-                            <button class="action-btn <%= post.isCurtidoPeloUsuario() ? "active" : "" %>" onclick="interagirPost(this, <%= post.getId() %>, 'like')">
-                                <svg viewBox="0 0 24 24" class="icon-heart"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                                <span class="like-count"><%= post.getTotalCurtidas() %></span>
-                            </button>
+                             <button class="action-btn <%= post.isCurtidoPeloUsuario() ? "active" : "" %>" onclick="interagirPost(this, <%= post.getId() %>, 'like')">
+                                 <svg viewBox="0 0 24 24" class="icon-heart"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                 <span class="like-count"><%= post.getTotalCurtidas() %></span>
+                             </button>
                          </div>
                     </div>
                 <% } %>
@@ -200,12 +203,60 @@
                              </div>
                          </section>
                          <div class="post-actions">
-                            <button class="action-btn <%= post.isSalvoPeloUsuario() ? "active" : "" %>" onclick="interagirPost(this, <%= post.getId() %>, 'save')">
-                                <svg viewBox="0 0 24 24" class="icon-bookmark"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                            </button>
+                             <button class="action-btn <%= post.isSalvoPeloUsuario() ? "active" : "" %>" onclick="interagirPost(this, <%= post.getId() %>, 'save')">
+                                 <svg viewBox="0 0 24 24" class="icon-bookmark"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                             </button>
                          </div>
                     </div>
                 <% } %>
+            </div>
+            
+            <div id="edicao" class="tab-content">
+                <div class="card my-4">
+                    <div class="card-header bg-dark text-white">
+                        <h4 class="mb-0">Alterar Dados de Acesso</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="formEdicaoPerfil" action="EditarPerfil" method="POST" onsubmit="return validarFormulario(event)">
+
+                            <input type="hidden" name="id" value="<%= usuario.getId() %>">
+
+                            <div class="mb-3">
+                                <label for="inputNome" class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="inputNome" name="nome" 
+                                       value="<%= usuario.getNome() %>" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="inputEmail" class="form-label">E-mail (Login)</label>
+                                <input type="email" class="form-control" id="inputEmail" name="email" 
+                                       value="<%= usuario.getEmail() %>" required>
+                                <div id="emailHelp" class="form-text">Este será seu novo e-mail de acesso.</div>
+                            </div>
+
+                            <hr>
+                            <p class="text-muted small">Preencha os campos abaixo apenas se desejar **alterar a senha**.</p>
+
+                            <div class="mb-3">
+                                <label for="inputNovaSenha" class="form-label">Nova Senha</label>
+                                <input type="password" class="form-control" id="inputNovaSenha" name="senha" 
+                                       placeholder="Mínimo 6 caracteres" minlength="6">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="inputConfirmaSenha" class="form-label">Confirmar Nova Senha</label>
+                                <input type="password" class="form-control" id="inputConfirmaSenha" name="confirmaSenha" 
+                                       placeholder="Repita a nova senha" minlength="6">
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -226,7 +277,6 @@
                         <textarea class="form-control" name="descricao" id="inputDescricao" rows="4"></textarea>
                     </div>
                     
-                    
                     <div class="d-grid gap-2 mt-3">
                         <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                         <button type="button" class="btn btn-secondary" onclick="document.getElementById('sidebar-main').classList.remove('is-visible')">Cancelar</button>
@@ -237,18 +287,33 @@
 
         <script src="resources/js/bootstrap.js"></script>
         <script>
+            
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const isStatusMessage = urlParams.has('sucesso') || urlParams.has('erro');
+                
+                if (isStatusMessage) {
+                    openTab('edicao', document.getElementById('btn-edicao'));
+                } else {
+                    openTab('meus', document.getElementById('btn-meus'));
+                }
+            });
+
             function openTab(tabName, btnElement) {
                 var contents = document.getElementsByClassName("tab-content");
                 for (var i = 0; i < contents.length; i++) {
                     contents[i].style.display = "none";  
                     contents[i].classList.remove("active");
                 }
+                
                 var tabs = document.getElementsByClassName("tab-btn");
                 for (var i = 0; i < tabs.length; i++) {
                     tabs[i].classList.remove("active");
                 }
+                
                 document.getElementById(tabName).style.display = "block";
                 setTimeout(() => { document.getElementById(tabName).classList.add("active"); }, 10);
+                
                 if(btnElement) { btnElement.classList.add("active"); }
             }
             
@@ -277,6 +342,26 @@
                     body: 'postId=' + postId + '&tipo=' + tipo
                 }).then(response => { if (!response.ok) { btnElement.classList.toggle('active'); alert("Erro."); } })
                   .catch(error => { btnElement.classList.toggle('active'); });
+            }
+
+            function validarFormulario(event) {
+                const novaSenha = document.getElementById('inputNovaSenha').value;
+                const confirmaSenha = document.getElementById('inputConfirmaSenha').value;
+                
+                if (novaSenha || confirmaSenha) {
+                    if (novaSenha !== confirmaSenha) {
+                        alert('Erro: A nova senha e a confirmação de senha não coincidem. Por favor, corrija.');
+                        event.preventDefault(); 
+                        return false;
+                    }
+                    if (novaSenha.length < 6) {
+                        alert('Erro: A nova senha deve ter no mínimo 6 caracteres.');
+                        event.preventDefault(); 
+                        return false;
+                    }
+                }
+                
+                return confirm('ATENÇÃO: Você está prestes a alterar seus dados de login (Nome, Email e/ou Senha). Deseja confirmar a operação?');
             }
         </script>
     </body>
