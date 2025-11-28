@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 /**
  *
  * @author Enzo Reis
+ * Documentação elaborada por: Gustavo Freitas
  */
 
 @WebFilter(filterName = "AuthFilter", urlPatterns = {"/admin.jsp", "/admin/*", "/SalvarRegistroServlet", "/SalvarPostServlet"})

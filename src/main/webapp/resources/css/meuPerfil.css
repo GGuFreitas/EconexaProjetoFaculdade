@@ -63,7 +63,7 @@ body {
     justify-content: center;
     gap: 50px;
     margin-top: 30px;
-    padding: 20px 40px;
+    padding: 20px 35px;
     border-radius: 15px;
     box-shadow: 0 8px 24px rgba(11,22,40,0.12);
     backdrop-filter: blur(10px) saturate(120%);
@@ -188,6 +188,7 @@ body {
     .perfil-stats {
         background-color: white;
         gap: 20px;
+        padding: 16px 24px;
     }
     body {
         background: #f8f9fa;

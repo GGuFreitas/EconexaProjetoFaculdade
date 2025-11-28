@@ -4,8 +4,8 @@
  */
 
 /**
- *
- * @author gufre
+ * 
+ * @author Gustavo Freitas
  */
 
 package com.mycompany.econexaadilson.model;

@@ -5,8 +5,9 @@
 package com.mycompany.econexaadilson.model.DAO;
 
 /**
- * 
- * @author gufre
+ * DAO para gerenciamento de Registros no mapa
+ * @author Gustavo de Freitas
+ * Documentação elaborada por: Gustavo Freitas
  */
 
 
@@ -20,7 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegistroDAO {
-
+    /**
+     * Insere um novo registro no banco de dados
+     * @param registro Objeto Registro com os dados a serem inseridos
+     * @return ID do registro inserido ou null em caso de erro
+     */
     public Long inserir(Registro registro) {
         String sql = "INSERT INTO registro (titulo, descricao, data, latitude, longitude, foto, status, tipo_registro_id, usuario_id) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -34,6 +39,7 @@ public class RegistroDAO {
             stmt.setDouble(4, registro.getLatitude());
             stmt.setDouble(5, registro.getLongitude());
             
+            // Foto é opcional - trata como BLOB se existir    
             if (registro.getFotoStream() != null) {
                 stmt.setBlob(6, registro.getFotoStream());
             } else {
@@ -42,7 +48,7 @@ public class RegistroDAO {
             
             stmt.setString(7, registro.getStatus());
             stmt.setLong(8, registro.getTipoRegistro().getId());
-            
+            // Usa ID 1 como fallback se usuário não for especificado    
             if (registro.getUsuarioId() != null) {
                 stmt.setLong(9, registro.getUsuarioId());
             } else {
@@ -65,7 +71,11 @@ public class RegistroDAO {
             return null;
         }
     }
-
+     /**
+     * Atualiza um registro existente (exceto foto)
+     * @param registro Objeto Registro com dados atualizados
+     * @return true se atualização foi bem sucedida
+     */
     public boolean atualizar(Registro registro) {
         String sql = "UPDATE registro SET titulo=?, descricao=?, data=?, latitude=?, longitude=?, status=?, tipo_registro_id=? WHERE id=?";
         try (Connection conn = ConexaoBanco.getConnection();
@@ -86,7 +96,11 @@ public class RegistroDAO {
             return false;
         }
     }
-
+    /**
+     * Exclui um registro pelo ID
+     * @param id ID do registro a ser excluído
+     * @return true se exclusão foi bem sucedida
+     */
     public boolean excluir(Long id) {
         String sql = "DELETE FROM registro WHERE id=?";
         try (Connection conn = ConexaoBanco.getConnection();
@@ -98,7 +112,10 @@ public class RegistroDAO {
             return false;
         }
     }
-
+    /**
+     * Lista todos os registros ordenados por data (mais recentes primeiro)
+     * @return Lista de todos os registros com dados completos
+     */
     public List<Registro> listarTodos() {
         List<Registro> registros = new ArrayList<>();
         String sql = "SELECT r.*, " +
@@ -121,7 +138,11 @@ public class RegistroDAO {
         }
         return registros;
     }
-
+    /**
+     * Lista registros de um usuário específico
+     * @param userId ID do usuário
+     * @return Lista de registros do usuário ordenados por data
+     */
     public List<Registro> listarPorUsuario(Long userId) {
         List<Registro> registros = new ArrayList<>();
         String sql = "SELECT r.*, " +
@@ -147,7 +168,11 @@ public class RegistroDAO {
         }
         return registros;
     }
-
+     /**
+     * Busca um registro específico pelo ID
+     * @param id ID do registro
+     * @return Objeto Registro ou null se não encontrado
+     */
     public Registro buscarPorId(Long id) {
         String sql = "SELECT r.*, " +
                      "tr.id as tr_id, tr.nome as tr_nome, tr.categoria as tr_categoria, tr.icone as tr_icone, " +
@@ -171,7 +196,11 @@ public class RegistroDAO {
         }
         return null;
     }
-
+    /**
+     * Obtém a imagem (foto) de um registro
+     * @param registroId ID do registro
+     * @return Array de bytes com a imagem ou null se não existir
+     */
     public byte[] getImagemById(Long registroId) {
         String sql = "SELECT foto FROM registro WHERE id = ?";
         try (Connection conn = ConexaoBanco.getConnection();
@@ -190,7 +219,12 @@ public class RegistroDAO {
         }
         return null;
     }
-
+       /**
+     * Cria objeto Registro a partir de ResultSet com joins
+     * @param rs ResultSet com dados do registro, tipo e usuário
+     * @return Objeto Registro populado
+     * @throws SQLException
+     */
     private Registro criarRegistroFromResultSet(ResultSet rs) throws SQLException {
         Registro r = new Registro();
         r.setId(rs.getLong("id"));

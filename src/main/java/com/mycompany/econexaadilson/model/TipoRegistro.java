@@ -6,7 +6,7 @@ package com.mycompany.econexaadilson.model;
 
 /**
  *
- * @author gufre
+ * @author Gustavo Freitas
  */
 import java.sql.*;
 import java.util.ArrayList;

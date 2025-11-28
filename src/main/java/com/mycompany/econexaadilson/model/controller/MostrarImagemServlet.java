@@ -1,7 +1,12 @@
 package com.mycompany.econexaadilson.model.controller;
-
+/**
+ * Servlet para exibir imagens de diferentes entidades (blog, registro, revista)
+ * Autor: Jhonny  
+ * Documentação: Gustavo Freitas
+ */
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
 import com.mycompany.econexaadilson.model.DAO.RegistroDAO;
+import com.mycompany.econexaadilson.model.DAO.RevistaPostDAO;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.ServletException;
@@ -12,13 +17,17 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "MostrarImagemServlet", urlPatterns = {"/MostrarImagemServlet"})
 public class MostrarImagemServlet extends HttpServlet {
-
+     /**
+     * Processa requisições GET para exibir imagens baseadas no tipo e ID
+     * @param request Requisição contendo ID e tipo da imagem
+     * @param response Resposta com imagem em formato JPEG
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
         try {
             String idParam = request.getParameter("id");
-            String tipo = request.getParameter("tipo");
+            String tipo = request.getParameter("tipo");// "registro", "revista" ou padrão "blog"
             
             if (idParam == null || idParam.isEmpty()) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -27,11 +36,15 @@ public class MostrarImagemServlet extends HttpServlet {
             
             Long id = Long.parseLong(idParam);
             byte[] imgBytes = null;
-            
+            // Roteia para o DAO apropriado baseado no tipo
             if ("registro".equals(tipo)) {
                 RegistroDAO registroDao = new RegistroDAO();
                 imgBytes = registroDao.getImagemById(id);
+            } else if ("revista".equals(tipo)) { // Bloco para revista
+                RevistaPostDAO revistaDao = new RevistaPostDAO();
+                imgBytes = revistaDao.getImagemById(id);
             } else {
+                // Mantém o Blog como padrão (fallback) para compatibilidade com o resto do sistema
                 BlogDAO blogDao = new BlogDAO();
                 imgBytes = blogDao.getImagemById(id);
             }
