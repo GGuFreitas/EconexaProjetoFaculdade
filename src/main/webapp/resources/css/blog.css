@@ -591,12 +591,12 @@ img[src=""], img:not([src]) {
 .sidebar-right {
     position: fixed;
     top: 0;
-    right: -500px; /* Escondido fora da tela */
+    right: -500px; 
     width: 100%;
     max-width: 500px;
     height: 100vh;
     background: white;
-    z-index: 1050; /* Acima da navbar */
+    z-index: 1050; 
     transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: -5px 0 25px rgba(0,0,0,0.15);
     padding: 30px;
@@ -606,7 +606,7 @@ img[src=""], img:not([src]) {
 }
 
 .sidebar-right.active {
-    right: 0; /* Desliza para dentro */
+    right: 0;
 }
 
 .overlay {
@@ -617,7 +617,7 @@ img[src=""], img:not([src]) {
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(3px);
-    z-index: 1040; /* Abaixo da sidebar */
+    z-index: 1040;
     display: none;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -628,7 +628,6 @@ img[src=""], img:not([src]) {
     opacity: 1;
 }
 
-/* Estilos internos do formulário da sidebar nova */
 .form-label.fw-bold { font-weight: 700; color: #333; }
 .form-control.form-control-lg { border-radius: 10px; font-size: 1.1rem; }
 .form-control:focus { border-color: #27ae60; box-shadow: 0 0 0 0.2rem rgba(39, 174, 96, 0.1); }

@@ -155,7 +155,6 @@ body {
   position: relative;
 }
 
-/* Container do mapa */
 #mapa-container {
     position: relative;
     width: 100%;
@@ -167,7 +166,6 @@ body {
     height: 100%;
 }
 
-/* Sidebar com estilo de vidro */
 .sidebar {
     position: absolute;
     top: 80px;
@@ -410,7 +408,6 @@ body {
   }
 }
 
-/* Estilos para os pop-ups do mapa */
 .leaflet-popup-content {
     margin: 12px;
     min-width: 250px;
@@ -430,7 +427,6 @@ body {
     line-height: 1.4;
 }
 
-/* ===== CORREÇÃO PARA IMAGENS NOS POPUPS ===== */
 .leaflet-popup-content img,
 .popup-image {
     max-width: 100% !important;
@@ -443,12 +439,10 @@ body {
     display: block;
 }
 
-/* Garantir que o popup-content contenha a imagem */
 .popup-content {
     overflow: hidden;
 }
 
-/* Melhorar visibilidade dos detalhes do popup */
 .popup-details {
     background: rgba(248, 249, 250, 0.9);
     border-top: 2px solid #e9ecef;
@@ -470,13 +464,11 @@ body {
     font-weight: 700;
 }
 
-/* ===== ESTILOS PARA OS NOVOS ÍCONES ===== */
 .leaflet-marker-icon {
     background: transparent !important;
     border: none !important;
 }
 
-/* Hover para os novos ícones */
 .icone-registro div {
     transition: transform 0.2s ease, filter 0.2s ease;
 }
@@ -503,7 +495,6 @@ body {
     transform: scale(1.2);
 }
 
-/* Estilos para o campo de arquivo */
 .form-control[type="file"] {
     padding: 8px;
     border: 1px solid #ced4da;

@@ -1,6 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+/**
+ * DAO para gerenciar Usuarios
+ * @author Enzo
+ * Documentação elaborada por: Gustavo Freitas
  */
 package com.mycompany.econexaadilson.model.DAO;
 
