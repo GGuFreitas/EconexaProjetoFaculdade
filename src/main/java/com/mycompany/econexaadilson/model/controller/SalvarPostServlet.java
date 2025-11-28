@@ -1,7 +1,7 @@
 package com.mycompany.econexaadilson.model.controller;
 /**
  * Servlet para salvar e gerenciar posts do blog (criar, editar, excluir)
- * @author Jhonny
+ * @author Jhonny 
  * @author Gustavo Freitas - Documentação
  */
 import com.mycompany.econexaadilson.model.Blog;

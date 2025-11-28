@@ -37,7 +37,6 @@ public class SalvarRegistroServlet extends HttpServlet {
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
-        
         String message = null;
         boolean sucesso = false;
         String origem = request.getParameter("origem"); // "admin" ou null (mapa)

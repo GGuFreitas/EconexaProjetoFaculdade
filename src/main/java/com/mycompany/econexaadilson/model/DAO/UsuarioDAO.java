@@ -1,7 +1,7 @@
 /**
  * DAO para gerenciar Usuarios
  * @author Enzo
- * Documentação elaborada por: Gustavo Freitas
+  Documentação elaborada por: Gustavo Freitas
  */
 package com.mycompany.econexaadilson.model.DAO;
 

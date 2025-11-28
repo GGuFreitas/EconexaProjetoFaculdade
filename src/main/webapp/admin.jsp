@@ -1,6 +1,5 @@
 <%-- 
     Document   : admin.jsp
-    Updated    : Inclusão do Gerenciamento de Usuários (Tabela + Sidebar de Edição).
     Author     : gufre, jhonny
 --%>
 
@@ -33,7 +32,7 @@
     TipoRegistroDAO tipoRegistroDAO = new TipoRegistroDAO();
     BlogDAO blogDAO = new BlogDAO();
     UsuarioDAO usuarioDAO = new UsuarioDAO();
-    RevistaPostDAO revistaDAO = new RevistaPostDAO(); // Instância do DAO da Revista
+    RevistaPostDAO revistaDAO = new RevistaPostDAO();
 
     // Lógica de Ações (CRUD)
     String acao = request.getParameter("acao");

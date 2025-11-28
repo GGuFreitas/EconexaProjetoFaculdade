@@ -248,7 +248,7 @@ public class BlogDAO {
         } catch (SQLException e) { return false; }
     }
     /**
-     * Executa uma operação de UPDATE simples com dois parâmetros
+      Executa uma operação de UPDATE simples com dois parâmetros
      */
     private boolean executarUpdateSimples(String sql, Long usuarioId, Long postId) {
         try (Connection conn = ConexaoBanco.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {

@@ -1,7 +1,7 @@
 package com.mycompany.econexaadilson.model.controller;
 /**
  * Servlet para exibir imagens de diferentes entidades (blog, registro, revista)
- * Autor: Jhonny  
+ * Autor: Jhonny 
  * Documentação: Gustavo Freitas
  */
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;
