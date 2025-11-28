@@ -20,7 +20,7 @@ import javax.servlet.http.Part;
 
 /**
  * Servlet para gerenciar artigos da revista (criar, editar, excluir)
- * @author Jhonny
+ * @author Alex, Enzo
  * @author Gustavo Freitas - Documentação
  */
 @WebServlet(name = "SalvarRevistaServlet", urlPatterns = {"/SalvarRevistaServlet"})

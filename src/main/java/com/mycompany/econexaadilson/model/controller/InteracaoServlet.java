@@ -2,7 +2,7 @@
 package com.mycompany.econexaadilson.model.controller;
 /**
  * Servlet para gerenciar interações de usuário com posts (curtir/salvar)
- * Autor: Jhonny
+ * Autor: Jhonny Brito
  * Documentação: Gustavo Freitas
  */
 import com.mycompany.econexaadilson.model.DAO.BlogDAO;

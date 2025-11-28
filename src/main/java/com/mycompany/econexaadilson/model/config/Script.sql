@@ -3,6 +3,11 @@
  * Atualizado: 27 de Novembro de 2025 (Inclusão de Status na tabela usuarios)
  */
 
+/**
+ * @author Alex, Enzo, Gustavo e Jhonny
+ * Documentação elaborada por: Gustavo Freitas
+ */
+
 -- Define o banco de dados
 CREATE DATABASE IF NOT EXISTS econexa;
 CHARACTER SET utf8mb4;

@@ -20,7 +20,6 @@ public class ConexaoBanco {
     
     public static Connection getConnection() throws SQLException {
         try {
-            // CORREÇÃO: Mudar para driver MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (ClassNotFoundException e) {

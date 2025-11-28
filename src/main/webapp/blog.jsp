@@ -220,7 +220,6 @@
             <% } %>
         </div>
         
-        <!-- NOVA SIDEBAR (Estilo Revista) -->
         <div class="sidebar-right" id="sidebarBlog">
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                 <h4 class="mb-0 fw-bold text-dark" id="sidebarTitle"><i class="fas fa-edit me-2 text-success"></i>Postar</h4>
@@ -241,7 +240,6 @@
                     <textarea class="form-control" name="descricao" id="inputDescricao" rows="8" required placeholder="Escreva o conteúdo do seu post aqui..."></textarea>
                 </div>
                 
-                <!-- Div Foto (Será escondida na edição) -->
                 <div class="mb-4" id="divFotoCapa">
                     <label class="form-label fw-bold">Imagem de Capa</label>
                     <div class="input-group">
@@ -298,7 +296,6 @@
                 document.getElementById("formRegistro").reset();
                 document.getElementById("inputId").value = "";
                 
-                // Garante que o campo de foto apareça
                 document.getElementById("divFotoCapa").classList.remove("d-none");
                 
                 document.getElementById("sidebarTitle").innerHTML = '<i class="fas fa-edit me-2 text-success"></i>Novo Post';
@@ -313,7 +310,6 @@
                 document.getElementById("inputTitulo").value = titulo;
                 document.getElementById("inputDescricao").value = descricao;
                 
-                // ESCONDE foto na edição (regra solicitada)
                 document.getElementById("divFotoCapa").classList.add("d-none");
                 
                 document.getElementById("sidebarTitle").innerHTML = '<i class="fas fa-pencil-alt me-2 text-primary"></i>Editar Post';
@@ -323,7 +319,6 @@
                 toggleSidebar();
             }
 
-            // Função AJAX para interagir
             function interagirPost(btnElement, postId, tipo) {
                 <% if (!estaLogado) { %>
                     alert("Faça login para interagir!");

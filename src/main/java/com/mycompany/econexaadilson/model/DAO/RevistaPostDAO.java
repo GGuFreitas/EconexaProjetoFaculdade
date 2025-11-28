@@ -1,6 +1,6 @@
 /**
  * DAO para gerenciar Revista
- * @author Jhonny
+ * @author Alex Michel
  * Documentação elaborada por: Gustavo Freitas
  */
 

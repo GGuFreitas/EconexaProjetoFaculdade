@@ -21,6 +21,7 @@ import org.mindrot.jbcrypt.BCrypt;
  * @author Enzo Reis
  * Documentação elaborada por: Enzo Reis
  */
+
 @WebServlet(name = "CadastroServlet", urlPatterns = {"/CadastroServlet"})
 public class CadastroServlet extends HttpServlet {
 
