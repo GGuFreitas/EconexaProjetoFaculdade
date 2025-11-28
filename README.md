@@ -373,7 +373,7 @@ Este projeto é desenvolvido para fins acadêmicos como parte do curso de Análi
 - **Gustavo de Freitas** - [GGuFreitas](https://github.com/GGuFreitas)
 - **Jhonny Brito** - Co-desenvolvedor - [jhonnywobrito](https://github.com/jhonnywobrito)
 - **Enzo Reis** - Co-desenvolvedor [Enzo-rbt0](https://github.com/Enzo-rbt0)
-- **Enzo Reis** - Co-desenvolvedor [alexmichel21](https://github.com/alexmichel21) 
+- **Alex Michel** - Co-desenvolvedor [alexmichel21](https://github.com/alexmichel21) 
 ## 🙏 Agradecimentos
 
 - Universidade de Mogi das Cruzes
