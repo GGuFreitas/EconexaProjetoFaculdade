@@ -1,4 +1,4 @@
-# 📋 Documentação do Projeto ECONEXA
+# 📋 ECONEXA
 
 ## 📖 Índice
 1. [Visão Geral](#visão-geral)
